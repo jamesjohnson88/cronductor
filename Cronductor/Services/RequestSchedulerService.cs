@@ -1,9 +1,8 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,105 +10,151 @@ namespace Cronductor.Services
 {
     public class RequestGeneratorConfig
     {
-        public string Name { get; set; } = string.Empty;
-        public string Endpoint { get; set; } = string.Empty;
-        public HttpMethod Method { get; set; } = HttpMethod.Get;
-        public Dictionary<string, string> Headers { get; set; } = new();
+        public string Name { get; set; } = "";
+        public string Endpoint { get; set; } = "";
+        public HttpMethod Method { get; set; } = HttpMethod.Post;
         public TimeSpan Frequency { get; set; } = TimeSpan.FromMinutes(1);
-        public double JitterSeconds { get; set; } = 0;
-        // Add more fields as needed
+        public TimeSpan? FutureOffset { get; set; }
+        public string? RequestBodyTemplate { get; set; }
+        public Dictionary<string, string>? Headers { get; set; }
     }
 
-    public class RequestLogEntry
+    public class RequestSchedulerService : BackgroundService
     {
-        public DateTime Timestamp { get; set; }
-        public string GeneratorName { get; set; } = "";
-        public string Result { get; set; } = "";
-    }
-
-    public class RequestSchedulerService : IHostedService, IDisposable
-    {
-        private readonly ILogger<RequestSchedulerService> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly List<RequestGeneratorConfig> _generators = new();
-        private readonly ConcurrentBag<RequestLogEntry> _log = new();
-        private readonly List<Timer> _timers = new();
-        private readonly HttpClient _httpClient = new();
-        private bool _disposed = false;
+        private readonly List<string> _log = new();
 
-        public RequestSchedulerService(ILogger<RequestSchedulerService> logger)
+        public RequestSchedulerService(IHttpClientFactory httpClientFactory)
         {
-            _logger = logger;
-            // Example generator. In a real app, populate from config or UI.
+            _httpClientFactory = httpClientFactory;
+
+            // Example generator with JSON body, scheduled_for replacement
             _generators.Add(new RequestGeneratorConfig
             {
-                Name = "Example GET",
-                Endpoint = "https://postman-echo.com/get",
-                Method = HttpMethod.Get,
-                Frequency = TimeSpan.FromSeconds(30)
+                Name = "Future Scheduled Task",
+                Endpoint = "https://api.example.com/update/status",
+                Method = HttpMethod.Post,
+                Frequency = TimeSpan.FromMinutes(1),
+                FutureOffset = TimeSpan.FromMinutes(10),
+                RequestBodyTemplate = @"{
+  \"scheduled_for\": 1754071000,
+  \"task_request_method\": \"PUT\",
+  \"task_request_url\": \"https://api.example.com/update/status\",
+  \"task_request_headers\": {
+    \"Accept\": \"application/json\"
+  },
+  \"task_request_payload\": {
+    \"status\": \"active\"
+  }
+}"
             });
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("RequestSchedulerService starting.");
+            var nextRunTimes = new Dictionary<RequestGeneratorConfig, DateTime>();
+
             foreach (var gen in _generators)
+                nextRunTimes[gen] = DateTime.UtcNow;
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var timer = new Timer(async _ => await GenerateRequest(gen), null, TimeSpan.Zero, gen.Frequency);
-                _timers.Add(timer);
+                var now = DateTime.UtcNow;
+                foreach (var gen in _generators)
+                {
+                    if (now >= nextRunTimes[gen])
+                    {
+                        _ = Task.Run(() => SendRequestAsync(gen), stoppingToken);
+                        nextRunTimes[gen] = now.Add(gen.Frequency);
+                    }
+                }
+
+                await Task.Delay(1000, stoppingToken);
             }
-            return Task.CompletedTask;
         }
 
-        private async Task GenerateRequest(RequestGeneratorConfig config)
+        private async Task SendRequestAsync(RequestGeneratorConfig config)
         {
             try
             {
-                var req = new HttpRequestMessage(config.Method, config.Endpoint);
-                foreach (var hdr in config.Headers)
-                    req.Headers.Add(hdr.Key, hdr.Value);
+                var httpClient = _httpClientFactory.CreateClient();
+                var request = new HttpRequestMessage(config.Method, config.Endpoint);
 
-                var resp = await _httpClient.SendAsync(req);
-                var body = await resp.Content.ReadAsStringAsync();
-                var entry = new RequestLogEntry
+                // Set headers
+                if (config.Headers != null)
                 {
-                    Timestamp = DateTime.UtcNow,
-                    GeneratorName = config.Name,
-                    Result = $"Status: {resp.StatusCode}, Body: {body.Substring(0, Math.Min(100, body.Length))}..."
-                };
-                _log.Add(entry);
-                _logger.LogInformation($"[{config.Name}] {entry.Result}");
+                    foreach (var kvp in config.Headers)
+                    {
+                        request.Headers.Add(kvp.Key, kvp.Value);
+                    }
+                }
+
+                // Prepare body if present
+                if (!string.IsNullOrWhiteSpace(config.RequestBodyTemplate))
+                {
+                    var epoch = DateTimeOffset.UtcNow.Add(config.FutureOffset ?? TimeSpan.Zero).ToUnixTimeSeconds();
+                    string body = ReplaceScheduledForEpoch(config.RequestBodyTemplate, epoch);
+                    request.Content = new StringContent(body, Encoding.UTF8, "application/json");
+                }
+
+                var response = await httpClient.SendAsync(request);
+                var responseText = await response.Content.ReadAsStringAsync();
+
+                lock (_log)
+                {
+                    _log.Add($"{DateTime.UtcNow:u} [{config.Name}] {response.StatusCode} {responseText}");
+                    if (_log.Count > 100) _log.RemoveAt(0);
+                }
             }
             catch (Exception ex)
             {
-                _log.Add(new RequestLogEntry
+                lock (_log)
                 {
-                    Timestamp = DateTime.UtcNow,
-                    GeneratorName = config.Name,
-                    Result = $"ERROR: {ex.Message}"
-                });
-                _logger.LogError(ex, $"[{config.Name}] Request failed");
+                    _log.Add($"{DateTime.UtcNow:u} [{config.Name}] ERROR {ex.Message}");
+                    if (_log.Count > 100) _log.RemoveAt(0);
+                }
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        private string ReplaceScheduledForEpoch(string json, long epoch)
         {
-            _logger.LogInformation("RequestSchedulerService stopping.");
-            foreach (var timer in _timers)
-                timer.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
-        }
-
-        public IEnumerable<RequestLogEntry> GetLogs() => _log.ToArray();
-
-        public void Dispose()
-        {
-            if (!_disposed)
+            try
             {
-                foreach (var timer in _timers)
-                    timer.Dispose();
-                _httpClient.Dispose();
-                _disposed = true;
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                var dict = new Dictionary<string, object>();
+                foreach (var prop in root.EnumerateObject())
+                {
+                    if (prop.NameEquals("scheduled_for"))
+                        dict["scheduled_for"] = epoch;
+                    else
+                        dict[prop.Name] = prop.Value.ValueKind switch
+                        {
+                            JsonValueKind.Object => JsonSerializer.Deserialize<object>(prop.Value.GetRawText()),
+                            JsonValueKind.Array => JsonSerializer.Deserialize<object>(prop.Value.GetRawText()),
+                            JsonValueKind.String => prop.Value.GetString() ?? "",
+                            JsonValueKind.Number => prop.Value.GetRawText(),
+                            JsonValueKind.True => true,
+                            JsonValueKind.False => false,
+                            JsonValueKind.Null => null,
+                            _ => prop.Value.GetRawText()
+                        };
+                }
+                return JsonSerializer.Serialize(dict, new JsonSerializerOptions { WriteIndented = true });
+            }
+            catch
+            {
+                // Fallback to regex for MVP; not recommended for production
+                return System.Text.RegularExpressions.Regex.Replace(
+                    json,
+                    "\"scheduled_for\"\s*:\s*\d+",
+                    $"\"scheduled_for\": {epoch}"
+                );
             }
         }
+
+        public IReadOnlyList<string> GetLog() => _log.AsReadOnly();
     }
 }
