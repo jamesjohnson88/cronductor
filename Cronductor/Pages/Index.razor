@@ -1,0 +1,25 @@
+@page "/"
+
+@inject Cronductor.Services.RequestSchedulerService Scheduler
+
+<h1>Cronductor Request Log</h1>
+<p>This is a demo log of scheduled HTTP requests.</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Timestamp (UTC)</th>
+            <th>Generator</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Scheduler.GetLogs().OrderByDescending(l => l.Timestamp).Take(50))
+        {
+            <tr>
+                <td>@entry.Timestamp.ToString("u")</td>
+                <td>@entry.GeneratorName</td>
+                <td>@entry.Result</td>
+            </tr>
+        }
+    </tbody>
+</table>
