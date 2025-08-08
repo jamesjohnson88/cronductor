@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Cronductor.Services;
+using Microsoft.Extensions.Hosting;
 
 namespace Cronductor.Services
 {
@@ -32,22 +34,13 @@ namespace Cronductor.Services
             // Example generator with JSON body, scheduled_for replacement
             _generators.Add(new RequestGeneratorConfig
             {
-                Name = "Future Scheduled Task",
-                Endpoint = "https://api.example.com/update/status",
+                Name = "Example",
+                Endpoint = "https://example.com/api",
                 Method = HttpMethod.Post,
                 Frequency = TimeSpan.FromMinutes(1),
                 FutureOffset = TimeSpan.FromMinutes(10),
-                RequestBodyTemplate = @"{
-  \"scheduled_for\": 1754071000,
-  \"task_request_method\": \"PUT\",
-  \"task_request_url\": \"https://api.example.com/update/status\",
-  \"task_request_headers\": {
-    \"Accept\": \"application/json\"
-  },
-  \"task_request_payload\": {
-    \"status\": \"active\"
-  }
-}"
+                RequestBodyTemplate = "{\"scheduled_for\": 0, \"other\": \"value\"}",
+                Headers = new Dictionary<string, string> { { "Authorization", "Bearer token" } }
             });
         }
 
@@ -149,12 +142,18 @@ namespace Cronductor.Services
                 // Fallback to regex for MVP; not recommended for production
                 return System.Text.RegularExpressions.Regex.Replace(
                     json,
-                    "\"scheduled_for\"\s*:\s*\d+",
+                    "\\\"scheduled_for\\\"\\s*:\\s*\\d+",
                     $"\"scheduled_for\": {epoch}"
                 );
             }
         }
 
-        public IReadOnlyList<string> GetLog() => _log.AsReadOnly();
+        public IReadOnlyList<string> GetLog()
+        {
+            lock (_log)
+            {
+                return _log.AsReadOnly();
+            }
+        }
     }
 }

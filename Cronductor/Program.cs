@@ -1,6 +1,7 @@
 using Cronductor.Services;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<RequestSchedulerService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<RequestSchedulerService>());
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
