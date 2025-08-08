@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Cronductor.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Cronductor.Services
 {
@@ -26,10 +26,12 @@ namespace Cronductor.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly List<RequestGeneratorConfig> _generators = new();
         private readonly List<string> _log = new();
+        private readonly IHubContext<LogHub>? _logHubContext;
 
-        public RequestSchedulerService(IHttpClientFactory httpClientFactory)
+        public RequestSchedulerService(IHttpClientFactory httpClientFactory, IHubContext<LogHub>? logHubContext = null)
         {
             _httpClientFactory = httpClientFactory;
+            _logHubContext = logHubContext;
 
             // Example generator with JSON body, scheduled_for replacement
             _generators.Add(new RequestGeneratorConfig
@@ -94,19 +96,25 @@ namespace Cronductor.Services
                 var response = await httpClient.SendAsync(request);
                 var responseText = await response.Content.ReadAsStringAsync();
 
+                var logEntry = $"{DateTime.UtcNow:u} [{config.Name}] {response.StatusCode} {responseText}";
                 lock (_log)
                 {
-                    _log.Add($"{DateTime.UtcNow:u} [{config.Name}] {response.StatusCode} {responseText}");
+                    _log.Add(logEntry);
                     if (_log.Count > 100) _log.RemoveAt(0);
                 }
+                if (_logHubContext != null)
+                    await _logHubContext.Clients.All.SendAsync("ReceiveLog", logEntry);
             }
             catch (Exception ex)
             {
+                var logEntry = $"{DateTime.UtcNow:u} [{config.Name}] ERROR {ex.Message}";
                 lock (_log)
                 {
-                    _log.Add($"{DateTime.UtcNow:u} [{config.Name}] ERROR {ex.Message}");
+                    _log.Add(logEntry);
                     if (_log.Count > 100) _log.RemoveAt(0);
                 }
+                if (_logHubContext != null)
+                    await _logHubContext.Clients.All.SendAsync("ReceiveLog", logEntry);
             }
         }
 

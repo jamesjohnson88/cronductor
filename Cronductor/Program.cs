@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Cronductor.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<RequestSchedulerService>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<RequestSchedulerService>(sp =>
+{
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var logHubContext = sp.GetService<Microsoft.AspNetCore.SignalR.IHubContext<Cronductor.LogHub>>();
+    return new RequestSchedulerService(httpClientFactory, logHubContext);
+});
 builder.Services.AddHostedService(sp => sp.GetRequiredService<RequestSchedulerService>());
 builder.Services.AddHttpClient();
 
@@ -26,6 +33,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
+app.MapHub<Cronductor.LogHub>("/logHub");
 app.MapFallbackToPage("/_Host");
 
 app.Run();
