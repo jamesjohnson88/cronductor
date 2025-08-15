@@ -1,10 +1,13 @@
 using CronductorApp.Components;
+using CronductorApp.Scheduler;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHostedService<SchedulingService>();
 
 var app = builder.Build();
 
