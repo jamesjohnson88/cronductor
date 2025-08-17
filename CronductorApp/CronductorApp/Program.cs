@@ -1,14 +1,17 @@
 using CronductorApp.Components;
-using CronductorApp.Scheduler;
+using CronductorApp.RequestScheduler;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHostedService<ScheduleRunner>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddHostedService<BackgroundScheduler>();
 
 builder.Services.AddSingleton<ScheduleService>();
+builder.Services.AddSingleton<RequestProcessor>();
 
 var app = builder.Build();
 
