@@ -1,4 +1,5 @@
-﻿using CronductorApp.RequestScheduler.Models;
+﻿using System.Net.Http.Headers;
+using CronductorApp.RequestScheduler.Models;
 
 namespace CronductorApp.RequestScheduler;
 
@@ -6,8 +7,12 @@ public class RequestProcessor (HttpClient client)
 {
     public async Task ProcessRequest(ScheduledRequest request, CancellationToken cancellationToken)
     {
-        // Here we would implement the logic to process the request
-        // For example, making an HTTP call or executing some business logic
+        var rq = new HttpRequestMessage(HttpMethod.Parse(request.Method), request.Url)
+        {
+            Content = request.Body as HttpContent ?? JsonContent.Create(request.Body)
+        };
+        // todo - headers, auth, etc.
+        
         var response = await client.GetAsync($"https://example.com/api/{request.Name}");
         
         if (response.IsSuccessStatusCode)

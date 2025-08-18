@@ -1,4 +1,5 @@
 ﻿using CronductorApp.RequestScheduler.Models;
+using Cronos;
 
 namespace CronductorApp.RequestScheduler;
 
@@ -8,12 +9,21 @@ public class ScheduleService
 
     public void AddSchedule(ScheduledRequest request)
     {
-        ScheduleQueue.Enqueue(request, EvaluateNextExecution(request));
+        var nextOccurrence = EvaluateNextOccurrence(request);
+        if (nextOccurrence.HasValue)
+        {
+            ScheduleQueue.Enqueue(request, nextOccurrence.Value);
+        }
+    }
+
+    public void RemoveSchedule(ScheduledRequest request)
+    {
+        throw new NotImplementedException();
     }
     
-    private static DateTime EvaluateNextExecution(ScheduledRequest request)
+    private static DateTime? EvaluateNextOccurrence(ScheduledRequest request)
     {
-        // todo - evaluate next execution time based on request's cron expression
-        return DateTime.Now.AddSeconds(10); // Placeholder
+        var cron = CronExpression.Parse(request.CronSchedule, CronFormat.IncludeSeconds);
+        return cron.GetNextOccurrence(DateTime.UtcNow);
     }
 }

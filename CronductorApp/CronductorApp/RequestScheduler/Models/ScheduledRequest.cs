@@ -1,10 +1,18 @@
 ﻿namespace CronductorApp.RequestScheduler.Models;
 
-public record ScheduledRequest(string Name, int FrequencySeconds)
+public class ScheduledRequest
 {
-    public string Name { get; set; } = Name;
-
-    public int FrequencySeconds { get; set; } = FrequencySeconds;
+    public string Name { get; set; } = string.Empty;
     
-    // method, url, etc.
+    public string Method { get; set; } = string.Empty;
+    
+    public string Url { get; set; } = string.Empty;
+    
+    public Dictionary<string, string> Headers { get; set; } = new();
+    
+    public object? Body { get; set; } = JsonContent.Create(new { });
+    
+    public string CronSchedule { get; set; } = string.Empty;
+
+    // Other config/options can come later, such as jitter, burst, etc.
 }
