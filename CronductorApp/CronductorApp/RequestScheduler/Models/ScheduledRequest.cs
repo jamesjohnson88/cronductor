@@ -1,4 +1,6 @@
-﻿namespace CronductorApp.RequestScheduler.Models;
+﻿using System.Net.Mime;
+
+namespace CronductorApp.RequestScheduler.Models;
 
 public class ScheduledRequest
 {
@@ -7,6 +9,8 @@ public class ScheduledRequest
     public string Method { get; set; } = string.Empty;
     
     public string Url { get; set; } = string.Empty;
+    
+    public string? ContentType { get; set; } = MediaTypeNames.Application.Json;
     
     public Dictionary<string, string> Headers { get; set; } = new();
     

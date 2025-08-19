@@ -7,14 +7,23 @@ public class RequestProcessor (HttpClient client)
 {
     public async Task ProcessRequest(ScheduledRequest request, CancellationToken cancellationToken)
     {
+        // todo - Map() method to get an HttpRequestMessage from ScheduledRequest
         var rq = new HttpRequestMessage(HttpMethod.Parse(request.Method), request.Url)
         {
             Content = request.Body as HttpContent ?? JsonContent.Create(request.Body)
         };
-        // todo - headers, auth, etc.
         
-        var response = await client.GetAsync($"https://example.com/api/{request.Name}");
+        if (request.ContentType is not null)
+        {
+            rq.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
+        }
         
+        foreach (var (key, value) in request.Headers)
+        {
+            rq.Headers.TryAddWithoutValidation(key, value);
+        }
+        
+        var response = await client.SendAsync(rq, cancellationToken);
         if (response.IsSuccessStatusCode)
         {
             // Handle successful response
