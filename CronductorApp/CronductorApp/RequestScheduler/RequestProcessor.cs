@@ -7,7 +7,22 @@ public class RequestProcessor (HttpClient client)
 {
     public async Task ProcessRequest(ScheduledRequest request, CancellationToken cancellationToken)
     {
-        // todo - Map() method to get an HttpRequestMessage from ScheduledRequest
+        var response = await client.SendAsync(CreateHttpRequestMessage(request), cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            // Handle successful response
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Processed request {request.Name} successfully: {content}");
+        }
+        else
+        {
+            // Handle error response
+            Console.WriteLine($"Failed to process request {request.Name}: {response.ReasonPhrase}");
+        }
+    }
+
+    private static HttpRequestMessage CreateHttpRequestMessage(ScheduledRequest request)
+    {
         var rq = new HttpRequestMessage(HttpMethod.Parse(request.Method), request.Url)
         {
             Content = request.Body as HttpContent ?? JsonContent.Create(request.Body)
@@ -22,18 +37,7 @@ public class RequestProcessor (HttpClient client)
         {
             rq.Headers.TryAddWithoutValidation(key, value);
         }
-        
-        var response = await client.SendAsync(rq, cancellationToken);
-        if (response.IsSuccessStatusCode)
-        {
-            // Handle successful response
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Processed request {request.Name} successfully: {content}");
-        }
-        else
-        {
-            // Handle error response
-            Console.WriteLine($"Failed to process request {request.Name}: {response.ReasonPhrase}");
-        }
+
+        return rq;
     }
 }

@@ -9,6 +9,7 @@ public class ScheduleService
 
     public void AddSchedule(ScheduledRequest request)
     {
+        // todo - validate these before adding to queue?
         var nextOccurrence = EvaluateNextOccurrence(request);
         if (nextOccurrence.HasValue)
         {

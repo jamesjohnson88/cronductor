@@ -8,10 +8,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddHostedService<BackgroundScheduler>();
-
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ScheduleService>();
 builder.Services.AddSingleton<RequestProcessor>();
+
+builder.Services.AddHostedService<BackgroundScheduler>();
 
 var app = builder.Build();
 
