@@ -15,6 +15,11 @@ public class ScheduleService
         {
             ScheduleQueue.Enqueue(request, nextOccurrence.Value);
         }
+        else
+        {
+            // temporary placeholder for error handling
+            throw new Exception("Failed to add schedule!");
+        }
     }
 
     public void RemoveSchedule(ScheduledRequest request)

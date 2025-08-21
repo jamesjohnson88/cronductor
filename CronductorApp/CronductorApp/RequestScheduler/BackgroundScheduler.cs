@@ -11,17 +11,18 @@ public class BackgroundScheduler(
         using var oneSecondTicker = new PeriodicTimer(TimeSpan.FromSeconds(1));
         while (await oneSecondTicker.WaitForNextTickAsync(stoppingToken))
         {
-            await TryProcessNextScheduledRequestAsync(stoppingToken);
+            TryProcessNextScheduledRequestAsync(stoppingToken);
         }
     }
     
-    private async Task TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
+    private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
         var hasNext = scheduleService.ScheduleQueue.TryPeek(out _, out var executionTime);
         if (hasNext && executionTime < timeProvider.GetLocalNow())
         {
             var nextScheduledRequest = scheduleService.ScheduleQueue.Dequeue();
-            await requestProcessor.ProcessRequest(nextScheduledRequest, cancellationToken);
+            _ = Task.Run(() => requestProcessor.ProcessRequest(nextScheduledRequest), cancellationToken);
+            scheduleService.AddSchedule(nextScheduledRequest);
         }
     }
 }

@@ -5,14 +5,14 @@ namespace CronductorApp.RequestScheduler;
 
 public class RequestProcessor (HttpClient client)
 {
-    public async Task ProcessRequest(ScheduledRequest request, CancellationToken cancellationToken)
+    public async Task ProcessRequest(ScheduledRequest request)
     {
-        var response = await client.SendAsync(CreateHttpRequestMessage(request), cancellationToken);
+        var response = await client.SendAsync(CreateHttpRequestMessage(request), CancellationToken.None);
         if (response.IsSuccessStatusCode)
         {
             // Handle successful response
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Processed request {request.Name} successfully: {content}");
+            //var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Processed request {request.Name} successfully.");
         }
         else
         {

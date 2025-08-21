@@ -1,4 +1,5 @@
-﻿@page "/Requests/Edit"
+﻿@page "/requests/edit"
+@rendermode InteractiveServer
 @using CronductorApp.RequestScheduler
 @using CronductorApp.RequestScheduler.Models
 @inject ScheduleService ScheduleService
@@ -12,7 +13,6 @@
 <p>Check the console for output.</p>
 
 @code {
-    // todo - not hit?
     private void TryAddRequest()
     {
         var request = new ScheduledRequest
@@ -20,7 +20,7 @@
             Name = "Test Request",
             Method = "GET",
             Url = "https://jsonplaceholder.typicode.com/posts",
-            CronSchedule = "*/30 * * * * *", // Every 30s
+            CronSchedule = "*/10 * * * * *", // Every 30s
         };
 
         // todo - should probably be async?
