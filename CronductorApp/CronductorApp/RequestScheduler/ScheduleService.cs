@@ -5,28 +5,46 @@ namespace CronductorApp.RequestScheduler;
 
 public class ScheduleService
 {
-    public readonly PriorityQueue<ScheduledRequest, DateTime> ScheduleQueue = new();
+    private readonly PriorityQueue<ScheduledRequest, DateTime> _scheduleQueue = new();
+    private readonly object _queueLock = new();
 
-    public void AddSchedule(ScheduledRequest request)
+    public bool AddSchedule(ScheduledRequest request)
     {
         // todo - validate these before adding to queue?
-        var nextOccurrence = EvaluateNextOccurrence(request);
-        if (nextOccurrence.HasValue)
+        lock (_queueLock)
         {
-            ScheduleQueue.Enqueue(request, nextOccurrence.Value);
+            var nextOccurrence = EvaluateNextOccurrence(request);
+            if (nextOccurrence.HasValue)
+            {
+                _scheduleQueue.Enqueue(request, nextOccurrence.Value);
+                return true;
+            }
         }
-        else
-        {
-            // temporary placeholder for error handling
-            throw new Exception("Failed to add schedule!");
-        }
+
+        return false;
     }
 
     public void RemoveSchedule(ScheduledRequest request)
     {
         throw new NotImplementedException();
     }
-    
+
+    public bool PeekNextSchedule(out DateTime nextOccurrence)
+    {
+        lock (_queueLock)
+        {
+            return _scheduleQueue.TryPeek(out _, out nextOccurrence);
+        }
+    }
+
+    public ScheduledRequest DequeueNextSchedule()
+    {
+        lock (_queueLock)
+        {
+            return _scheduleQueue.Dequeue();
+        }
+    }
+
     private static DateTime? EvaluateNextOccurrence(ScheduledRequest request)
     {
         var cron = CronExpression.Parse(request.CronSchedule, CronFormat.IncludeSeconds);

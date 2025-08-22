@@ -17,10 +17,10 @@ public class BackgroundScheduler(
     
     private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
-        var hasNext = scheduleService.ScheduleQueue.TryPeek(out _, out var executionTime);
+        var hasNext = scheduleService.PeekNextSchedule(out var executionTime);
         if (hasNext && executionTime < timeProvider.GetLocalNow())
         {
-            var nextScheduledRequest = scheduleService.ScheduleQueue.Dequeue();
+            var nextScheduledRequest = scheduleService.DequeueNextSchedule();
             _ = Task.Run(() => requestProcessor.ProcessRequest(nextScheduledRequest), cancellationToken);
             scheduleService.AddSchedule(nextScheduledRequest);
         }
