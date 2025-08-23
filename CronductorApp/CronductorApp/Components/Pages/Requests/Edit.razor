@@ -8,11 +8,19 @@
 
 <p>Try adding a request</p>
 <button class="btn btn-primary" @onclick="TryAddRequest">Add Request</button>
-
 <br />
-<p>Check the console for output.</p>
+@if (!string.IsNullOrEmpty(_message))
+{
+    <div class="alert alert-@(_message.Contains("fail") ? "danger" : "success") alert-dismissible fade show mt-3">
+        @_message
+        <button type="button" class="btn-close" @onclick="() => { _message = null; }"></button>
+    </div>
+}
 
 @code {
+    private string? _message;
+    private Timer? _messageTimer;
+    
     private void TryAddRequest()
     {
         var request = new ScheduledRequest
@@ -23,7 +31,21 @@
             CronSchedule = "*/20 * * * * *", // Every 20s
         };
 
-        var success = ScheduleService.AddSchedule(request);
-        // update a state or something?
+        ShowMessage(ScheduleService.AddSchedule(request) ? 
+            "Request added successfully." : "Failed to add request.");
+    }
+    
+    private void ShowMessage(string msg)
+    {
+        _message = msg;
+        StateHasChanged();
+
+        _messageTimer?.Dispose();
+        _messageTimer = new Timer(_ => {
+            InvokeAsync(() => {
+                _message = null;
+                StateHasChanged();
+            });
+        }, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
     }
 }
