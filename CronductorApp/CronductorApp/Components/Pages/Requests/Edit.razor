@@ -6,21 +6,36 @@
 
 <h3>Edit</h3>
 
+<div class="skeleton-lines">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+
 <p>Try adding a request</p>
-<button class="btn btn-primary" @onclick="TryAddRequest">Add Request</button>
+<button class="button is-primary is-small" @onclick="TryAddRequest">Add Request</button>
 <br />
 @if (!string.IsNullOrEmpty(_message))
 {
-    <div class="alert alert-@(_message.Contains("fail") ? "danger" : "success") alert-dismissible fade show mt-3">
+    <div class="">
         @_message
-        <button type="button" class="btn-close" @onclick="() => { _message = null; }"></button>
+        <button type="button" class="" @onclick="() => { _message = null; }"></button>
     </div>
 }
 
 @code {
     private string? _message;
     private Timer? _messageTimer;
-    
+
+    protected override void OnInitialized()
+    {
+        // check we have access to scheduler
+        // show skeleton until we do
+        base.OnInitialized();
+    }
+
     private void TryAddRequest()
     {
         var request = new ScheduledRequest
