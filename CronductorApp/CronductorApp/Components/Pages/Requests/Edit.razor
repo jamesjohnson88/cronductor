@@ -2,20 +2,16 @@
 @rendermode InteractiveServer
 @using CronductorApp.RequestScheduler
 @using CronductorApp.RequestScheduler.Models
+@using CronductorApp.Components.Composition.Atoms
 @inject ScheduleService ScheduleService
 
 <h3>Edit</h3>
-
-<div class="skeleton-lines">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-</div>
-
-<p>Try adding a request</p>
 <button class="button is-primary is-small" @onclick="TryAddRequest">Add Request</button>
+<PrimaryButton
+    AdditionalClasses="is-small"
+    OnClick="TryAddRequest">
+    Add Test Request
+</PrimaryButton>
 <br />
 @if (!string.IsNullOrEmpty(_message))
 {

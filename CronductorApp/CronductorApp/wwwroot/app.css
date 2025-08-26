@@ -16,3 +16,7 @@
     --bulma-scheme-s: 26%;
     --bulma-hover-background-l-delta: 20%;
 }
+
+.box {
+    --bulma-box-shadow: 0 0.25em 0.5em -0.125em hsla(0deg,0%,100%,0.1),0 0px 0 1px hsla(0deg,0%,100%,0.02) !important;
+}

@@ -17,4 +17,10 @@
       <PackageReference Include="Cronos" Version="0.11.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Components\Composition\Molecules\" />
+      <Folder Include="Components\Composition\Organisms\" />
+      <Folder Include="Components\Composition\Pages\" />
+    </ItemGroup>
+
 </Project>
