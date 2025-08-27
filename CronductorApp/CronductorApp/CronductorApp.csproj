@@ -20,7 +20,6 @@
     <ItemGroup>
       <Folder Include="Components\Composition\Molecules\" />
       <Folder Include="Components\Composition\Organisms\" />
-      <Folder Include="Components\Composition\Pages\" />
     </ItemGroup>
 
 </Project>
