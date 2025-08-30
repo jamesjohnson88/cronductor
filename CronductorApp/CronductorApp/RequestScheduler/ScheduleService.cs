@@ -1,6 +1,5 @@
 ﻿using CronductorApp.RequestScheduler.Models;
 using Cronos;
-using Microsoft.Extensions.Logging;
 
 namespace CronductorApp.RequestScheduler;
 
@@ -19,6 +18,9 @@ public class ScheduleService
     {
         try
         {
+            // todo - validate and return errors
+            // will require a non-bool return...
+
             var nextOccurrence = EvaluateNextOccurrence(request);
             if (!nextOccurrence.HasValue)
             {
