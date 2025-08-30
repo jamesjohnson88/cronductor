@@ -55,8 +55,22 @@ public class BackgroundScheduler : BackgroundService
                 _logger.LogDebug("Processing scheduled request {RequestName} at {ExecutionTime}",
                     nextScheduledRequest.Name, executionTime);
 
-                _ = Task.Run(() => _requestProcessor.ProcessRequest(nextScheduledRequest), cancellationToken);
+                // Re-add so that schedules with close executions are not blocked by current execution(s)
+                // We're taking this execution, then when re-added, the scheduler will evaluate and queue the next one
                 _scheduleService.AddSchedule(nextScheduledRequest);
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _requestProcessor.ProcessRequest(nextScheduledRequest);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error processing request {RequestName}, will retry on next schedule",
+                            nextScheduledRequest.Name);
+                    }
+                }, cancellationToken);
             }
         }
         catch (Exception ex)

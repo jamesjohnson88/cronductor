@@ -19,21 +19,19 @@ public class ScheduleService
     {
         try
         {
+            var nextOccurrence = EvaluateNextOccurrence(request);
+            if (!nextOccurrence.HasValue)
+            {
+                _logger.LogWarning("Could not determine next occurrence for request {RequestName}", request.Name);
+                return false;
+            }
+
             lock (_queueLock)
             {
-                var nextOccurrence = EvaluateNextOccurrence(request);
-                if (nextOccurrence.HasValue)
-                {
-                    _scheduleQueue.Enqueue(request, nextOccurrence.Value);
-                    _logger.LogInformation("Added schedule for {RequestName} at {NextOccurrence}",
-                        request.Name, nextOccurrence.Value);
-                    return true;
-                }
-                else
-                {
-                    _logger.LogWarning("Could not determine next occurrence for request {RequestName}", request.Name);
-                    return false;
-                }
+                _scheduleQueue.Enqueue(request, nextOccurrence.Value);
+                _logger.LogInformation("Added schedule for {RequestName} at {NextOccurrence}",
+                    request.Name, nextOccurrence.Value);
+                return true;
             }
         }
         catch (Exception ex)
