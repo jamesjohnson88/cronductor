@@ -2,10 +2,13 @@
 
 <!-- Navigation Bar -->
 <nav class="navbar" role="navigation">
-    <NavBarItem Title="Requests" Link="/requests" />
-    <NavBarItem Title="Events" Link="#" />
-    <NavBarItem Title="Other" Link="#" />
+    @foreach (var item in NavigationItems)
+    {
+        <NavBarItem Title="@item.Key" Link="@item.Value" />
+    }
 </nav>
 
 @code {
+    [Parameter]
+    public required Dictionary<string, string> NavigationItems { get; set; }
 }

@@ -5,8 +5,8 @@
     <header>
         <div>Cronductor</div>
     </header>
-    
-    <NavBar /><!-- todo: hoist links for nav at this level? -->
+
+    <NavBar NavigationItems="@NavigationItems" />
 
     <main>
         <article class="container">
@@ -14,3 +14,12 @@
         </article>
     </main>
 </div>
+
+@code {
+    private Dictionary<string, string> NavigationItems => new()
+    {
+        ["Requests"] = "/requests",
+        ["Events"] = "#",
+        ["Other"] = "#"
+    };
+}
