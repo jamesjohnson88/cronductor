@@ -4,20 +4,20 @@
 @using CronductorApp.RequestScheduler.Models
 @using CronductorApp.Components.Composition.Atoms
 @inject ScheduleService ScheduleService
+@implements IDisposable
 
 <h3>Edit</h3>
-<PrimaryButton
-    AdditionalClasses="is-small"
-    OnClick="TryAddRequest">
+<PrimaryButton AdditionalClasses="is-small" OnClick="TryAddRequest">
     Add Test Request
 </PrimaryButton>
 <br />
+
 @if (!string.IsNullOrEmpty(_message))
 {
-    <div class="">
-        @_message
-        <button type="button" class="" @onclick="() => { _message = null; }"></button>
-    </div>
+        <div class="">
+            @_message
+            <button type="button" class="" @onclick="() => { _message = null; }"></button>
+        </div>
 }
 
 @code {
@@ -41,21 +41,29 @@
             CronSchedule = "*/20 * * * * *", // Every 20s
         };
 
-        ShowMessage(ScheduleService.AddSchedule(request) ? 
+        ShowMessage(ScheduleService.AddSchedule(request) ?
             "Request added successfully." : "Failed to add request.");
     }
-    
+
     private void ShowMessage(string msg)
     {
         _message = msg;
         StateHasChanged();
 
         _messageTimer?.Dispose();
-        _messageTimer = new Timer(_ => {
-            InvokeAsync(() => {
-                _message = null;
-                StateHasChanged();
-            });
+        _messageTimer = new Timer(_ =>
+         {
+       
+            InvokeAsync(() =>
+        {
+            _message = null;
+            StateHasChanged();
+        });
         }, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
+    }
+
+    public void Dispose()
+    {
+        _messageTimer?.Dispose();
     }
 }

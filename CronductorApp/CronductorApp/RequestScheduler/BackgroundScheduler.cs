@@ -1,28 +1,67 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
+
 namespace CronductorApp.RequestScheduler;
 
-public class BackgroundScheduler(
-    ScheduleService scheduleService,
-    TimeProvider timeProvider,
-    RequestProcessor requestProcessor) : BackgroundService
-{   
+public class BackgroundScheduler : BackgroundService
+{
+    private readonly ScheduleService _scheduleService;
+    private readonly TimeProvider _timeProvider;
+    private readonly RequestProcessor _requestProcessor;
+    private readonly ILogger<BackgroundScheduler> _logger;
+
+    public BackgroundScheduler(
+        ScheduleService scheduleService,
+        TimeProvider timeProvider,
+        RequestProcessor requestProcessor,
+        ILogger<BackgroundScheduler> logger)
+    {
+        _scheduleService = scheduleService;
+        _timeProvider = timeProvider;
+        _requestProcessor = requestProcessor;
+        _logger = logger;
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var oneSecondTicker = new PeriodicTimer(TimeSpan.FromSeconds(1));
-        while (await oneSecondTicker.WaitForNextTickAsync(stoppingToken))
+        _logger.LogInformation("Background scheduler started");
+
+        try
         {
-            TryProcessNextScheduledRequestAsync(stoppingToken);
+            using var oneSecondTicker = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            while (await oneSecondTicker.WaitForNextTickAsync(stoppingToken))
+            {
+                TryProcessNextScheduledRequestAsync(stoppingToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Background scheduler stopped");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Background scheduler encountered an error");
+            throw;
         }
     }
-    
+
     private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
-        var hasNext = scheduleService.PeekNextSchedule(out var executionTime);
-        if (hasNext && executionTime < timeProvider.GetLocalNow())
+        try
         {
-            var nextScheduledRequest = scheduleService.DequeueNextSchedule();
-            _ = Task.Run(() => requestProcessor.ProcessRequest(nextScheduledRequest), cancellationToken);
-            scheduleService.AddSchedule(nextScheduledRequest);
+            var hasNext = _scheduleService.PeekNextSchedule(out var executionTime);
+            if (hasNext && executionTime < _timeProvider.GetLocalNow())
+            {
+                var nextScheduledRequest = _scheduleService.DequeueNextSchedule();
+                _logger.LogDebug("Processing scheduled request {RequestName} at {ExecutionTime}",
+                    nextScheduledRequest.Name, executionTime);
+
+                _ = Task.Run(() => _requestProcessor.ProcessRequest(nextScheduledRequest), cancellationToken);
+                _scheduleService.AddSchedule(nextScheduledRequest);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing next scheduled request");
         }
     }
 }
