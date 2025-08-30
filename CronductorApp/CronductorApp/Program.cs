@@ -1,18 +1,29 @@
 using CronductorApp.Components;
 using CronductorApp.RequestScheduler;
+using Polly;
+using Polly.Extensions.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<RequestProcessor>(client =>
+{
+    client.Timeout = TimeSpan.FromMinutes(5);
+    client.DefaultRequestHeaders.Add("User-Agent", "CronductorApp/1.0");
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    AllowAutoRedirect = true,
+    UseProxy = true,
+    AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
+})
+.AddPolicyHandler(GetRetryPolicy());
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ScheduleService>();
-builder.Services.AddSingleton<RequestProcessor>();
-
-builder.Services.AddHostedService<BackgroundScheduler>();
+builder.Services.AddSingleton<BackgroundScheduler>();
 
 var app = builder.Build();
 
@@ -31,3 +42,12 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+return;
+
+static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+{
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(3, retryAttempt =>
+            TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+}
