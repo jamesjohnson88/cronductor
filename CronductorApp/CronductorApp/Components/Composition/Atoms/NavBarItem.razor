@@ -1,14 +1,12 @@
 ﻿<!-- NavBar Item -->
-<div class="navbar-brand">
-    <a class="navbar-item" href="@Link">
-        @Title
-    </a>
-</div>
+<a class="menu-label nav-item" href="@Link">
+    @Title
+</a>
 
 @code {
     [Parameter]
     public required string Title { get; set; }
-    
+
     [Parameter]
     public required string Link { get; set; }
 }

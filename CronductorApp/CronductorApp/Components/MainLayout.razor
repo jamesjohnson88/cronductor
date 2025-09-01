@@ -1,18 +1,11 @@
-﻿@using CronductorApp.Components.Composition.Molecules
-@using CronductorApp.Components.Composition.Organisms
+﻿@using CronductorApp.Components.Composition.Organisms
 @inherits LayoutComponentBase
 
-<div class="">
-    <AppHeader />
+<AppHeader />
 
-    <NavBar NavigationItems="@NavigationItems" />
-
-    <main>
-        <article class="container">
-            @Body
-        </article>
-    </main>
-</div>
+<AppMain NavigationItems="@NavigationItems">
+    @Body
+</AppMain>
 
 @code {
     private Dictionary<string, string> NavigationItems => new()

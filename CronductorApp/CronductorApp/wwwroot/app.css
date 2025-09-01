@@ -1,3 +1,4 @@
+/* Bulma variables and overrides */
 :root {
     --bulma-primary-h: 302deg;
     --bulma-primary-s: 83%;
@@ -21,6 +22,7 @@
     --bulma-box-shadow: 0 0.25em 0.5em -0.125em hsla(0deg, 0%, 100%, 0.1), 0 0px 0 1px hsla(0deg, 0%, 100%, 0.02) !important;
 }
 
+/* Header */
 header {
     background: linear-gradient(205deg, hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), 15%), hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), 25%));
     border-bottom-color: hsla(0deg, 0%, 100%, 0.1) !important;
@@ -45,4 +47,23 @@ header {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     font-family: 'Galada', cursive;
     opacity: 95%;
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+    height: 100%;
+    background-color: var(--bulma-background);
+    border-right: 1px solid var(--bulma-border);
+}
+
+.nav-item {
+    color: var(--bulma-text);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: block;
+}
+
+/* Layout */
+.layout-container {
+    min-height: calc(100vh - 64px);
 }

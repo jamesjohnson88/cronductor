@@ -1,12 +1,16 @@
 ﻿@using CronductorApp.Components.Composition.Atoms
 
-<!-- Navigation Bar -->
-<nav class="navbar" role="navigation">
-    @foreach (var item in NavigationItems)
-    {
-        <NavBarItem Title="@item.Key" Link="@item.Value" />
-    }
-</nav>
+<!-- Sidebar Navigation -->
+<aside class="menu p-4 sidebar-nav">
+    <ul class="menu-list">
+        @foreach (var item in NavigationItems)
+        {
+            <li>
+                <NavBarItem Title="@item.Key" Link="@item.Value" />
+            </li>
+        }
+    </ul>
+</aside>
 
 @code {
     [Parameter]

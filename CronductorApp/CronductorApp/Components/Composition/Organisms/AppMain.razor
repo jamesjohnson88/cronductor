@@ -1,0 +1,20 @@
+@using CronductorApp.Components.Composition.Molecules
+@inherits LayoutComponentBase
+
+<div class="columns is-gapless layout-container">
+    <div class="column is-2">
+        <NavBar NavigationItems="@NavigationItems" />
+    </div>
+    <div class="column">
+        <main>
+            <article class="container">
+                @Body
+            </article>
+        </main>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required Dictionary<string, string> NavigationItems { get; set; }
+}

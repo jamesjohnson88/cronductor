@@ -23,6 +23,9 @@ bld/
 # JetBrains Rider
 .idea/
 
+# Cursor
+*.cursor*
+
 # User-specific files
 *.rsuser
 *.suo
