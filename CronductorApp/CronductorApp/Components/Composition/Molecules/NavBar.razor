@@ -1,4 +1,5 @@
 ﻿@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.ViewModels
 
 <!-- Sidebar Navigation -->
 <aside class="menu sidebar-nav">
@@ -6,7 +7,7 @@
         @foreach (var item in NavigationItems)
         {
             <li>
-                <NavBarItem Title="@item.Key" Link="@item.Value" />
+                <NavBarItem Title="@item.Title" Link="@item.Link" Icon="@item.Icon" />
             </li>
         }
     </ul>
@@ -14,5 +15,5 @@
 
 @code {
     [Parameter]
-    public required Dictionary<string, string> NavigationItems { get; set; }
+    public required List<NavigationItem> NavigationItems { get; set; }
 }

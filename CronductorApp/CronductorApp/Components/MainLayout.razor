@@ -1,4 +1,5 @@
 ﻿@using CronductorApp.Components.Composition.Organisms
+@using CronductorApp.Components.ViewModels
 @inherits LayoutComponentBase
 
 <AppHeader />
@@ -8,10 +9,10 @@
 </AppMain>
 
 @code {
-    private Dictionary<string, string> NavigationItems => new()
-    {
-        ["Requests"] = "/requests",
-        ["Events"] = "#",
-        ["Other"] = "#"
-    };
+    private static List<NavigationItem> NavigationItems =>
+    [
+        new() { Title = "Requests", Link = "/requests", Icon = "fas fa-list" },
+        new() { Title = "Events", Link = "#", Icon = "fas fa-calendar" },
+        new() { Title = "Other", Link = "#", Icon = "fas fa-ellipsis-h" }
+    ];
 }

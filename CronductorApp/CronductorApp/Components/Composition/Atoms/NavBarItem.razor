@@ -1,5 +1,9 @@
 ﻿<!-- NavBar Item -->
-<a class="menu-label nav-item" href="@Link">
+<a class="menu-label nav-item is-size-7" href="@Link">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <i class="@Icon mx-3 my-2"></i>
+    }
     @Title
 </a>
 
@@ -9,4 +13,7 @@
 
     [Parameter]
     public required string Link { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
 }

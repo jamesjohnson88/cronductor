@@ -1,4 +1,5 @@
 @using CronductorApp.Components.Composition.Molecules
+@using CronductorApp.Components.ViewModels
 
 <div class="columns is-gapless layout-container">
     <div class="column is-2">
@@ -15,7 +16,7 @@
 
 @code {
     [Parameter]
-    public required Dictionary<string, string> NavigationItems { get; set; }
+    public required List<NavigationItem> NavigationItems { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
