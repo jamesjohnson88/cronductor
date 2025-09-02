@@ -1,5 +1,4 @@
 @using CronductorApp.Components.Composition.Molecules
-@inherits LayoutComponentBase
 
 <div class="columns is-gapless layout-container">
     <div class="column is-2">
@@ -8,7 +7,7 @@
     <div class="column">
         <main>
             <article class="container">
-                @Body
+                @ChildContent
             </article>
         </main>
     </div>
@@ -17,4 +16,7 @@
 @code {
     [Parameter]
     public required Dictionary<string, string> NavigationItems { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 }

@@ -16,10 +16,12 @@
     --bulma-scheme-h: 252;
     --bulma-scheme-s: 26%;
     --bulma-hover-background-l-delta: 20%;
+    --bulma-family-sans-serif: 'Lato', BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    --bulma-menu-list-link-padding: 1rem 1rem;
 }
 
 .box {
-    --bulma-box-shadow: 0 0.25em 0.5em -0.125em hsla(0deg, 0%, 100%, 0.1), 0 0px 0 1px hsla(0deg, 0%, 100%, 0.02) !important;
+    --bulma-box-shadow: 0 0.25em 0.5em -0.125em hsla(0deg, 0%, 100%, 0.1), 0 0px 0 1px hsla(0deg, 0%, 100%, 0.02);
 }
 
 /* Header */
@@ -43,7 +45,6 @@ header {
 }
 
 .brand-text {
-    margin: 0;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     font-family: 'Galada', cursive;
     opacity: 95%;
@@ -56,14 +57,34 @@ header {
     border-right: 1px solid var(--bulma-border);
 }
 
+.sidebar-nav .menu-list {
+    width: 100%;
+}
+
 .nav-item {
-    color: var(--bulma-text);
-    text-decoration: none;
-    padding: 0.5rem 0;
-    display: block;
+    color: hsla(0deg, 0%, 100%, 0.9) !important;
+    background-color: var(--bulma-background) !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid hsla(0deg, 0%, 100%, 0.1) !important;
+    transition: background-color 0.2s ease, border-radius 0.2s ease;
+    text-transform: none !important;
+    font-weight: 700;
+    width: 100% !important;
+}
+
+.nav-item:hover {
+    background-color: hsla(0deg, 0%, 100%, 0.02) !important;
+    color: hsla(0deg, 0%, 100%, 0.9) !important;
+    border-radius: 4px !important;
+    border-bottom-color: hsla(0deg, 0%, 100%, 0.02) !important;
 }
 
 /* Layout */
 .layout-container {
     min-height: calc(100vh - 64px);
+}
+
+/* Typography */
+body {
+    font-family: var(--bulma-family-sans-serif), sans-serif;
 }
