@@ -7,7 +7,7 @@
         @foreach (var item in NavigationItems)
         {
             <li>
-                <NavBarItem Title="@item.Title" Link="@item.Link" Icon="@item.Icon" />
+                <NavBarItem Title="@item.Title" Link="@item.Link" Icon="@item.Icon" IsActive="@item.IsActive" />
             </li>
         }
     </ul>

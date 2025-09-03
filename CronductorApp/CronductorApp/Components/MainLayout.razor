@@ -1,6 +1,8 @@
 ﻿@using CronductorApp.Components.Composition.Organisms
 @using CronductorApp.Components.ViewModels
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <AppHeader />
 
@@ -9,10 +11,58 @@
 </AppMain>
 
 @code {
-    private static List<NavigationItem> NavigationItems =>
-    [
-        new() { Title = "Requests", Link = "/requests", Icon = "fas fa-list" },
-        new() { Title = "Events", Link = "#", Icon = "fas fa-calendar" },
-        new() { Title = "Other", Link = "#", Icon = "fas fa-ellipsis-h" }
-    ];
+    private List<NavigationItem> NavigationItems { get; set; } = [];
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+        UpdateNavigationItems();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateNavigationItems();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateNavigationItems()
+    {
+        var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        NavigationItems =
+        [
+        new NavigationItem
+{
+Title = "Dashboard",
+Link = "#",
+Icon ="fas fa-tachometer-alt",
+IsActive = currentPath.Equals("") || currentPath.Equals("#")
+},
+new NavigationItem
+{
+Title = "Requests",
+Link = "/requests",
+Icon = "fas fa-list", IsActive = currentPath.StartsWith("requests")
+},
+new NavigationItem
+{
+Title = "Events",
+Link = "#",
+Icon = "fas fa-calendar",
+IsActive = currentPath.StartsWith("events")
+},
+new NavigationItem
+{
+Title = "Other",
+Link = "#",
+Icon ="fas fa-ellipsis-h",
+IsActive = false // as this is just a placeholder
+}
+        ];
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
 }

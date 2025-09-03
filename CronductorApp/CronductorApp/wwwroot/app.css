@@ -18,6 +18,7 @@
     --bulma-hover-background-l-delta: 20%;
     --bulma-family-sans-serif: 'Lato', BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
     --bulma-menu-list-link-padding: 1rem 1rem;
+    --bulma-content-margin: 1rem;
 }
 
 .box {
@@ -79,9 +80,62 @@ header {
     border-bottom-color: hsla(0deg, 0%, 100%, 0.02) !important;
 }
 
+.nav-item.is-active {
+    background-color: hsla(0deg, 0%, 45%, 0.08) !important;
+    border-bottom-color: hsla(0deg, 0%, 100%, 0.15) !important;
+    box-shadow: 0 0 0 1px hsla(0deg, 0%, 100%, 0.05);
+    position: relative;
+}
+
+.nav-item.is-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(135deg, hsl(var(--bulma-primary-h), var(--bulma-primary-s), var(--bulma-primary-l)), hsl(var(--bulma-link-h), var(--bulma-link-s), var(--bulma-link-l)));
+    border-radius: 0 2px 2px 0;
+}
+
 /* Layout */
 .layout-container {
     min-height: calc(100vh - 64px);
+}
+
+/* Main Content Area */
+main {
+    padding: var(--bulma-content-margin);
+    background-image:
+        radial-gradient(circle at 25% 25%, hsla(0deg, 0%, 100%, 0.015) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, hsla(0deg, 0%, 100%, 0.015) 0%, transparent 50%);
+    background-size: 200px 200px;
+    background-position: 0 0, 100px 100px;
+}
+
+main .container {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Content Typography & Spacing */
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: hsla(0deg, 0%, 100%, 0.95);
+}
+
+.content-section {
+    margin-bottom: 2rem;
+}
+
+.content-card {
+    background: hsla(0deg, 0%, 100%, 0.02);
+    border: 1px solid hsla(0deg, 0%, 100%, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 /* Typography */

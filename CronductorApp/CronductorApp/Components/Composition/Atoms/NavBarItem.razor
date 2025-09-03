@@ -1,9 +1,6 @@
 ﻿<!-- NavBar Item -->
-<a class="menu-label nav-item is-size-7" href="@Link">
-    @if (!string.IsNullOrEmpty(Icon))
-    {
-        <i class="@Icon mx-3 my-2"></i>
-    }
+<a class="menu-label nav-item is-size-7 @(IsActive ? "is-active" : "")" href="@Link">
+    <i class="@Icon mx-3 my-2"></i>
     @Title
 </a>
 
@@ -15,5 +12,8 @@
     public required string Link { get; set; }
 
     [Parameter]
-    public string? Icon { get; set; }
+    public required string Icon { get; set; }
+
+    [Parameter]
+    public bool IsActive { get; set; }
 }
