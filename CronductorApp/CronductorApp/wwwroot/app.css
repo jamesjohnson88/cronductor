@@ -120,14 +120,7 @@ main .container {
 
 /* Content Typography & Spacing */
 .page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
     color: hsla(0deg, 0%, 100%, 0.95);
-}
-
-.content-section {
-    margin-bottom: 2rem;
 }
 
 .content-card {
@@ -190,13 +183,6 @@ body {
     right: 0;
     height: 2px;
     background: linear-gradient(135deg, hsl(var(--bulma-primary-h), var(--bulma-primary-s), var(--bulma-primary-l)), hsl(var(--bulma-link-h), var(--bulma-link-s), var(--bulma-link-l)));
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
 }
 
 .request-item,
@@ -280,12 +266,6 @@ body {
 
 .timestamp {
     color: hsla(0deg, 0%, 100%, 0.6);
-    margin-right: 0.5rem;
-}
-
-.level {
-    font-weight: bold;
-    margin-right: 0.5rem;
 }
 
 .message {

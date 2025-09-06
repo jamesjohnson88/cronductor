@@ -4,7 +4,7 @@
 
 <!-- Scheduled Requests Section -->
 <div class="scheduled-requests-section">
-    <div class="section-header">
+    <div class="is-flex is-justify-content-space-between is-align-items-center mb-6 section-header">
         <h2 class="title is-4">Scheduled Requests</h2>
         <PrimaryButton IconClass="fas fa-plus" Text="Add Request" OnClick="AddRequest" />
     </div>
@@ -19,9 +19,7 @@
         }
         else
         {
-            <EmptyState 
-                IconClass="fas fa-clock" 
-                Title="No Scheduled Requests" 
+            <EmptyState IconClass="fas fa-clock" Title="No Scheduled Requests"
                 Subtitle="Get started by adding your first scheduled request.">
                 <ActionContent>
                     <PrimaryButton IconClass="fas fa-plus" Text="Add Your First Request" OnClick="AddRequest" />

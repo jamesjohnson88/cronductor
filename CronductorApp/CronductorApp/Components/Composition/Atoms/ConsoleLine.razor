@@ -1,7 +1,7 @@
 <!-- Console Line Atom -->
 <div class="console-line @LevelClass">
-    <span class="timestamp">[@Timestamp.ToString("HH:mm:ss.fff")]</span>
-    <span class="level">[@Level.ToUpper()]</span>
+    <span class="timestamp mr-2">[@Timestamp.ToString("HH:mm:ss.fff")]</span>
+    <span class="has-text-weight-bold mr-2 level">[@Level.ToUpper()]</span>
     <span class="message">@Message</span>
     @if (!string.IsNullOrEmpty(Details))
     {
