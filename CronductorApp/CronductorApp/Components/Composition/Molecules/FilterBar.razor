@@ -1,0 +1,21 @@
+@using CronductorApp.Components.Composition.Atoms
+
+<!-- Filter Bar Molecule -->
+<div class="section-header">
+    <h2 class="title is-4">@Title</h2>
+    <SearchInput Placeholder="@Placeholder" Value="@FilterText" OnValueChanged="@OnFilterChanged" />
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Filter...";
+
+    [Parameter]
+    public string FilterText { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnFilterChanged { get; set; }
+}

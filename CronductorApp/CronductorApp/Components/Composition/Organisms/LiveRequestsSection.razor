@@ -1,0 +1,92 @@
+@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.Composition.Molecules
+@using CronductorApp.Components.Composition.Models
+<!-- Live Requests Section -->
+<div class="live-requests-section">
+    <div class="section-header">
+        <h2 class="title is-4">Live Requests</h2>
+        <div class="field has-addons">
+            <div class="control">
+                <IconButton 
+                    IconClass="@(IsLive ? "fas fa-stop" : "fas fa-play")" 
+                    Text="@(IsLive ? "Stop Live" : "Start Live")"
+                    ButtonClass="@(IsLive ? "is-danger" : "is-success")" 
+                    OnClick="@ToggleLive" />
+            </div>
+            <div class="control">
+                <IconButton 
+                    IconClass="fas fa-trash" 
+                    Text="Clear"
+                    ButtonClass="is-light" 
+                    OnClick="@ClearLog" />
+            </div>
+        </div>
+    </div>
+
+    <div class="live-console">
+        <ConsoleHeader 
+            LogLevel="@LogLevel" 
+            LogCount="@FilteredLogs.Count" 
+            IsLive="@IsLive" 
+            OnLogLevelChanged="@OnLogLevelChanged" />
+
+        <div class="console-output" @ref="consoleOutput">
+            @if (FilteredLogs?.Any() == true)
+            {
+                @foreach (var log in FilteredLogs.TakeLast(100))
+                {
+                    <ConsoleLine 
+                        Level="@log.Level" 
+                        Message="@log.Message" 
+                        Details="@log.Details" 
+                        Timestamp="@log.Timestamp" />
+                }
+            }
+            else
+            {
+                <EmptyState 
+                    IconClass="fas fa-broadcast-tower" 
+                    Title="Live Console Ready" 
+                    Subtitle="Start live monitoring to see real-time request activity." />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<LiveLogModel>? LiveLogs { get; set; }
+
+    private bool IsLive { get; set; } = false;
+    private string LogLevel { get; set; } = "all";
+    private ElementReference consoleOutput;
+
+    private List<LiveLogModel> FilteredLogs =>
+        LiveLogs?.Where(l => LogLevel == "all" || l.Level.Equals(LogLevel, StringComparison.OrdinalIgnoreCase))
+        .ToList() ?? new List<LiveLogModel>();
+
+    private async Task ToggleLive()
+    {
+        IsLive = !IsLive;
+        // TODO: Implement actual live monitoring logic
+        await Task.CompletedTask;
+    }
+
+    private async Task ClearLog()
+    {
+        LiveLogs?.Clear();
+        await Task.CompletedTask;
+    }
+
+    private async Task OnLogLevelChanged(string level)
+    {
+        LogLevel = level;
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // TODO: Implement auto-scroll to bottom of console when new logs arrive
+        await Task.CompletedTask;
+    }
+}

@@ -1,0 +1,33 @@
+<!-- Status Toggle Atom -->
+<span class="tag @(IsActive? ActiveTagClass : InactiveTagClass)">
+    <span class="icon is-small">
+        <i class="@(IsActive? ActiveIconClass : InactiveIconClass) @(IsActive && PulseWhenActive ? "pulse" : "")"></i>
+    </span>
+    @(IsActive? ActiveText : InactiveText)
+</span>
+
+@code {
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    [Parameter]
+    public string ActiveText { get; set; } = "Active";
+
+    [Parameter]
+    public string InactiveText { get; set; } = "Inactive";
+
+    [Parameter]
+    public string ActiveIconClass { get; set; } = "fas fa-check-circle";
+
+    [Parameter]
+    public string InactiveIconClass { get; set; } = "fas fa-times-circle";
+
+    [Parameter]
+    public string ActiveTagClass { get; set; } = "is-success";
+
+    [Parameter]
+    public string InactiveTagClass { get; set; } = "is-light";
+
+    [Parameter]
+    public bool PulseWhenActive { get; set; } = false;
+}

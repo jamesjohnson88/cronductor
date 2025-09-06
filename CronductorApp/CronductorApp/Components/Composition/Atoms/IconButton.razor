@@ -1,0 +1,27 @@
+<!-- Icon Button Atom -->
+<button class="button is-small @ButtonClass @AdditionalClasses" @onclick="OnClick">
+    <span class="icon is-small">
+        <i class="@IconClass"></i>
+    </span>
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <span>@Text</span>
+    }
+</button>
+
+@code {
+    [Parameter]
+    public string IconClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public string ButtonClass { get; set; } = "is-primary is-outlined";
+
+    [Parameter]
+    public string? AdditionalClasses { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

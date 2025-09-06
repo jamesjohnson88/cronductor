@@ -1,0 +1,24 @@
+<!-- Status Tag Atom -->
+<span class="tag is-small @StatusClass">
+    @Text
+</span>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Status { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? AdditionalClasses { get; set; }
+
+    private string StatusClass => Status.ToLower() switch
+    {
+        "success" or "active" => "is-success",
+        "error" or "inactive" => "is-danger",
+        "warning" or "timeout" => "is-warning",
+        "info" => "is-info",
+        _ => "is-light"
+    };
+}

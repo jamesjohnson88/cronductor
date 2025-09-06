@@ -1,0 +1,28 @@
+<!-- Empty State Atom -->
+<div class="has-text-centered py-6">
+    <div class="icon is-large has-text-grey-light mb-4">
+        <i class="@IconClass fa-3x"></i>
+    </div>
+    <h3 class="title is-5 has-text-grey-light">@Title</h3>
+    <p class="subtitle is-6 has-text-grey-light">@Subtitle</p>
+    @if (ActionContent != null)
+    {
+        <div class="mt-4">
+            @ActionContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string IconClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Subtitle { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment? ActionContent { get; set; }
+}

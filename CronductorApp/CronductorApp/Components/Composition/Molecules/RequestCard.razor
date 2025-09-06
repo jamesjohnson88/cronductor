@@ -1,0 +1,34 @@
+@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.Composition.Models
+
+<!-- Request Card Molecule -->
+<div class="box request-item">
+    <div class="columns is-vcentered">
+        <div class="column is-8">
+            <div class="request-info">
+                <h4 class="title is-6">@Request.Name</h4>
+                <p class="subtitle is-7 has-text-grey-light">@Request.Url</p>
+                <div class="tags">
+                    <StatusTag Text="@Request.Schedule" Status="info" />
+                    <StatusTag Text="@(Request.IsActive ? "Active" : "Inactive")"
+                        Status="@(Request.IsActive ? "active" : "inactive")" />
+                </div>
+            </div>
+        </div>
+        <div class="column is-4 has-text-right">
+            <EditDeleteButtons ItemId="@Request.Id" OnEdit="@OnEdit" OnDelete="@OnDelete" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RequestModel Request { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<string> OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnDelete { get; set; }
+
+}

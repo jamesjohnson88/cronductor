@@ -1,0 +1,61 @@
+@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.Composition.Molecules
+@using CronductorApp.Components.Composition.Models
+
+<!-- Scheduled Requests Section -->
+<div class="scheduled-requests-section">
+    <div class="section-header">
+        <h2 class="title is-4">Scheduled Requests</h2>
+        <PrimaryButton IconClass="fas fa-plus" Text="Add Request" OnClick="AddRequest" />
+    </div>
+
+    <div class="requests-list">
+        @if (ScheduledRequests?.Any() == true)
+        {
+            @foreach (var request in ScheduledRequests)
+            {
+                <RequestCard Request="@request" OnEdit="@EditRequest" OnDelete="@DeleteRequest" />
+            }
+        }
+        else
+        {
+            <EmptyState 
+                IconClass="fas fa-clock" 
+                Title="No Scheduled Requests" 
+                Subtitle="Get started by adding your first scheduled request.">
+                <ActionContent>
+                    <PrimaryButton IconClass="fas fa-plus" Text="Add Your First Request" OnClick="AddRequest" />
+                </ActionContent>
+            </EmptyState>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<RequestModel>? ScheduledRequests { get; set; }
+
+    [Parameter]
+    public EventCallback OnAddRequest { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnEditRequest { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnDeleteRequest { get; set; }
+
+    private async Task AddRequest()
+    {
+        await OnAddRequest.InvokeAsync();
+    }
+
+    private async Task EditRequest(string requestId)
+    {
+        await OnEditRequest.InvokeAsync(requestId);
+    }
+
+    private async Task DeleteRequest(string requestId)
+    {
+        await OnDeleteRequest.InvokeAsync(requestId);
+    }
+}

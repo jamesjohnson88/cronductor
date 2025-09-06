@@ -1,0 +1,33 @@
+@using CronductorApp.Components.Composition.Models
+
+<!-- History Card Details Molecule -->
+@if (History.IsExpanded)
+{
+    <div class="expanded-content">
+        <hr class="my-4">
+        <div class="columns">
+            <div class="column is-6">
+                <h5 class="title is-6">Request Details</h5>
+                <div class="content is-small">
+                    <p><strong>Method:</strong> @History.Method</p>
+                    <p><strong>Headers:</strong></p>
+                    <pre class="is-size-7">@History.Headers</pre>
+                </div>
+            </div>
+            <div class="column is-6">
+                <h5 class="title is-6">Response Details</h5>
+                <div class="content is-small">
+                    <p><strong>Response Headers:</strong></p>
+                    <pre class="is-size-7">@History.ResponseHeaders</pre>
+                    <p><strong>Response Body:</strong></p>
+                    <pre class="is-size-7">@History.ResponseBody</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public HistoryModel History { get; set; } = new();
+}

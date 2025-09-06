@@ -1,0 +1,45 @@
+@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.ViewModels
+
+<!-- Console Header Molecule -->
+<div class="console-header">
+    <div class="columns is-vcentered">
+        <div class="column is-6">
+            <div class="field has-addons">
+                <div class="control">
+                    <SelectDropdown Value="@LogLevel" Options="@LogLevelOptions" OnValueChanged="@OnLogLevelChanged" />
+                </div>
+                <div class="control">
+                    <CountTag Count="@LogCount" Label="entries" />
+                </div>
+            </div>
+        </div>
+        <div class="column is-6 has-text-right">
+            <StatusToggle IsActive="@IsLive" ActiveText="LIVE" InactiveText="OFFLINE"
+                ActiveIconClass="fas fa-play-circle" InactiveIconClass="fas fa-stop-circle" PulseWhenActive="true" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string LogLevel { get; set; } = "all";
+
+    [Parameter]
+    public int LogCount { get; set; }
+
+    [Parameter]
+    public bool IsLive { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnLogLevelChanged { get; set; }
+
+    private List<SelectOption> LogLevelOptions => new()
+{
+new() { Value = "all", Text = "All" },
+new() { Value = "info", Text = "Info" },
+new() { Value = "success", Text = "Success" },
+new() { Value = "warning", Text = "Warning" },
+new() { Value = "error", Text = "Error" }
+};
+}

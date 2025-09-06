@@ -142,3 +142,182 @@ main .container {
 body {
     font-family: var(--bulma-family-sans-serif), sans-serif;
 }
+
+/* Requests Page Styling */
+.requests-sub-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bulma-background);
+    border-bottom: 1px solid hsla(0deg, 0%, 100%, 0.1);
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 0;
+}
+
+.requests-sub-nav .tabs {
+    margin-bottom: 0;
+}
+
+.requests-sub-nav .tabs ul {
+    border-bottom: none;
+}
+
+.requests-sub-nav .tabs li a {
+    color: hsla(0deg, 0%, 100%, 0.7);
+    border-color: transparent;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.requests-sub-nav .tabs li a:hover {
+    color: hsla(0deg, 0%, 100%, 0.9);
+    background-color: hsla(0deg, 0%, 100%, 0.05);
+    border-color: hsla(0deg, 0%, 100%, 0.1);
+}
+
+.requests-sub-nav .tabs li.is-active a {
+    color: hsla(0deg, 0%, 100%, 0.95);
+    background-color: hsla(0deg, 0%, 100%, 0.08);
+    border-color: hsla(0deg, 0%, 100%, 0.15);
+    box-shadow: 0 0 0 1px hsla(0deg, 0%, 100%, 0.05);
+}
+
+.requests-sub-nav .tabs li.is-active a::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(135deg, hsl(var(--bulma-primary-h), var(--bulma-primary-s), var(--bulma-primary-l)), hsl(var(--bulma-link-h), var(--bulma-link-s), var(--bulma-link-l)));
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.request-item,
+.history-item {
+    background: hsla(0deg, 0%, 100%, 0.02);
+    border: 1px solid hsla(0deg, 0%, 100%, 0.05);
+    transition: all 0.2s ease;
+}
+
+.request-item:hover,
+.history-item:hover {
+    background: hsla(0deg, 0%, 100%, 0.04);
+    border-color: hsla(0deg, 0%, 100%, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.expanded-content {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.live-console {
+    background: hsla(0deg, 0%, 0%, 0.3);
+    border: 1px solid hsla(0deg, 0%, 100%, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.console-header {
+    background: hsla(0deg, 0%, 100%, 0.05);
+    padding: 1rem;
+    border-bottom: 1px solid hsla(0deg, 0%, 100%, 0.1);
+}
+
+.console-output {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.console-line {
+    margin-bottom: 0.5rem;
+    border-left: 3px solid transparent;
+    padding: 0.25rem 0 0.25rem 0.5rem;
+}
+
+.console-line.is-success {
+    border-left-color: var(--bulma-success);
+    color: var(--bulma-success);
+}
+
+.console-line.is-error,
+.console-line.is-danger {
+    border-left-color: var(--bulma-danger);
+    color: var(--bulma-danger);
+}
+
+.console-line.is-warning {
+    border-left-color: var(--bulma-warning);
+    color: var(--bulma-warning);
+}
+
+.console-line.is-info {
+    border-left-color: var(--bulma-info);
+    color: var(--bulma-info);
+}
+
+.timestamp {
+    color: hsla(0deg, 0%, 100%, 0.6);
+    margin-right: 0.5rem;
+}
+
+.level {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.message {
+    color: hsla(0deg, 0%, 100%, 0.9);
+}
+
+.details {
+    margin-top: 0.5rem;
+    margin-left: 1rem;
+}
+
+.details pre {
+    background: hsla(0deg, 0%, 0%, 0.2);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+}
+
+.live-indicator .pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

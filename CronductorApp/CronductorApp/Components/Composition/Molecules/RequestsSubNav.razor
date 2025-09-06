@@ -1,0 +1,47 @@
+@using CronductorApp.Components.Composition.Atoms
+
+<!-- Sticky Sub Navigation for Requests Page -->
+<nav class="requests-sub-nav">
+    <div class="tabs is-boxed">
+        <ul>
+            <li class="@(ActiveSection == "scheduled" ? "is-active" : "")">
+                <a @onclick='() => SetActiveSection("scheduled")'>
+                    <span class="icon is-small">
+                        <i class="fas fa-clock"></i>
+                    </span>
+                    <span>Scheduled Requests</span>
+                </a>
+            </li>
+            <li class="@(ActiveSection == "history" ? "is-active" : "")">
+                <a @onclick='() => SetActiveSection("history")'>
+                    <span class="icon is-small">
+                        <i class="fas fa-history"></i>
+                    </span>
+                    <span>Request History</span>
+                </a>
+            </li>
+            <li class="@(ActiveSection == "live" ? "is-active" : "")">
+                <a @onclick='() => SetActiveSection("live")'>
+                    <span class="icon is-small">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </span>
+                    <span>Live Requests</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+@code {
+    [Parameter]
+    public string ActiveSection { get; set; } = "scheduled";
+
+    [Parameter]
+    public EventCallback<string> OnSectionChanged { get; set; }
+
+    private async Task SetActiveSection(string section)
+    {
+        ActiveSection = section;
+        await OnSectionChanged.InvokeAsync(section);
+    }
+}

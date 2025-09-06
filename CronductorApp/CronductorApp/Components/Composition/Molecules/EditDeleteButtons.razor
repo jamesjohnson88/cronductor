@@ -1,0 +1,17 @@
+<!-- Edit Delete Buttons Molecule -->
+<div class="buttons">
+    <IconButton IconClass="fas fa-edit" OnClick="@(() => OnEdit.InvokeAsync(ItemId))" />
+    <IconButton IconClass="fas fa-trash" ButtonClass="is-danger is-outlined"
+        OnClick="@(() => OnDelete.InvokeAsync(ItemId))" />
+</div>
+
+@code {
+    [Parameter]
+    public string ItemId { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnDelete { get; set; }
+}

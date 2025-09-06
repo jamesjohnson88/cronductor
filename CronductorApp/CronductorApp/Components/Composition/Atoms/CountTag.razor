@@ -1,0 +1,12 @@
+<!-- Count Tag Atom -->
+<span class="tag is-small is-light">
+    @Count @Label
+</span>
+
+@code {
+    [Parameter]
+    public int Count { get; set; }
+
+    [Parameter]
+    public string Label { get; set; } = "items";
+}

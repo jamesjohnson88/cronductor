@@ -1,0 +1,31 @@
+<!-- Search Input Atom -->
+<div class="field has-addons">
+    <div class="control">
+        <input class="input is-small" type="text" placeholder="@Placeholder" @bind="Value"
+            @oninput="OnValueChangedInternal" />
+    </div>
+    <div class="control">
+        <button class="button is-small is-static">
+            <span class="icon is-small">
+                <i class="fas fa-search"></i>
+            </span>
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Placeholder { get; set; } = "Search...";
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnValueChanged { get; set; }
+
+    private async Task OnValueChangedInternal(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await OnValueChanged.InvokeAsync(Value);
+    }
+}

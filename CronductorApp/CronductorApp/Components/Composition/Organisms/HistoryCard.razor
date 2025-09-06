@@ -1,0 +1,15 @@
+@using CronductorApp.Components.Composition.Models
+
+<!-- History Card Organism -->
+<div class="box history-item">
+    <HistoryCardHeader History="@History" OnToggleExpanded="@OnToggleExpanded" />
+    <HistoryCardDetails History="@History" />
+</div>
+
+@code {
+    [Parameter]
+    public HistoryModel History { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<string> OnToggleExpanded { get; set; }
+}

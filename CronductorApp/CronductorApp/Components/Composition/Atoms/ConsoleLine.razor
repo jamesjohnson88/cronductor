@@ -1,0 +1,36 @@
+<!-- Console Line Atom -->
+<div class="console-line @LevelClass">
+    <span class="timestamp">[@Timestamp.ToString("HH:mm:ss.fff")]</span>
+    <span class="level">[@Level.ToUpper()]</span>
+    <span class="message">@Message</span>
+    @if (!string.IsNullOrEmpty(Details))
+    {
+        <details class="details">
+            <summary>Details</summary>
+            <pre class="is-size-7">@Details</pre>
+        </details>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Level { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Message { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Details { get; set; } = string.Empty;
+
+    [Parameter]
+    public DateTime Timestamp { get; set; }
+
+    private string LevelClass => Level.ToLower() switch
+    {
+        "success" => "is-success",
+        "error" => "is-danger",
+        "warning" => "is-warning",
+        "info" => "is-info",
+        _ => "is-light"
+    };
+}

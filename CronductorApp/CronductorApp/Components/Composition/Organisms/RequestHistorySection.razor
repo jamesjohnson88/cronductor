@@ -1,0 +1,52 @@
+<!-- Request History Section -->
+<div class="request-history-section">
+    <FilterBar 
+        Title="Request History" 
+        Placeholder="Filter requests..." 
+        FilterText="@FilterText" 
+        OnFilterChanged="@OnFilterChanged" />
+
+    <div class="history-list">
+        @if (RequestHistory?.Any() == true)
+        {
+            @foreach (var history in FilteredHistory)
+            {
+                <HistoryCard History="@history" OnToggleExpanded="@ToggleExpanded" />
+            }
+        }
+        else
+        {
+            <EmptyState 
+                IconClass="fas fa-history" 
+                Title="No Request History" 
+                Subtitle="Request history will appear here once scheduled requests start executing." />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<HistoryModel>? RequestHistory { get; set; }
+
+    private string FilterText { get; set; } = string.Empty;
+
+    private List<HistoryModel> FilteredHistory =>
+        RequestHistory?.Where(h => string.IsNullOrEmpty(FilterText) 
+            || h.RequestName.Contains(FilterText, StringComparison.OrdinalIgnoreCase) 
+            || h.Url.Contains(FilterText, StringComparison.OrdinalIgnoreCase))
+        .ToList() ?? new List<HistoryModel>();
+
+    private void OnFilterChanged(string value)
+    {
+        FilterText = value;
+    }
+
+    private void ToggleExpanded(string historyId)
+    {
+        var history = RequestHistory?.FirstOrDefault(h => h.Id == historyId);
+        if (history != null)
+        {
+            history.IsExpanded = !history.IsExpanded;
+        }
+    }
+}

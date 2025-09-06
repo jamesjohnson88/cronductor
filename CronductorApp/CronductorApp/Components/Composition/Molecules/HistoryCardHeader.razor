@@ -1,0 +1,42 @@
+@using CronductorApp.Components.Composition.Atoms
+@using CronductorApp.Components.Composition.Models
+
+<!-- History Card Header Molecule -->
+<div class="columns is-vcentered">
+    <div class="column is-10">
+        <div class="history-info">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <h4 class="title is-6">@History.RequestName</h4>
+                    <p class="subtitle is-7 has-text-grey-light">@History.Url</p>
+                    <div class="tags">
+                        <StatusTag Text="@History.Status" Status="@History.Status" />
+                        <StatusTag Text="@History.ExecutedAt.ToString("MMM dd, yyyy HH:mm:ss")" Status="info" />
+                    </div>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <div class="execution-details">
+                        <p class="is-size-7 has-text-grey-light">
+                            Duration: @History.Duration ms
+                        </p>
+                        <p class="is-size-7 has-text-grey-light">
+                            Status Code: @History.StatusCode
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 has-text-right">
+        <IconButton IconClass="@(History.IsExpanded ? "fas fa-chevron-up" : "fas fa-chevron-down")"
+            OnClick="@(() => OnToggleExpanded.InvokeAsync(History.Id))" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public HistoryModel History { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<string> OnToggleExpanded { get; set; }
+}
