@@ -214,17 +214,19 @@ body {
 
 .request-item,
 .history-item {
-    background: hsla(0deg, 0%, 100%, 0.02);
-    border: 1px solid hsla(0deg, 0%, 100%, 0.05);
+    background: hsla(0deg, 0%, 100%, 0.04);
+    border: 1px solid hsla(0deg, 0%, 100%, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
 }
 
 .request-item:hover,
 .history-item:hover {
-    background: hsla(0deg, 0%, 100%, 0.04);
-    border-color: hsla(0deg, 0%, 100%, 0.1);
+    background: hsla(0deg, 0%, 100%, 0.06);
+    border-color: hsla(0deg, 0%, 100%, 0.12);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .expanded-content {
