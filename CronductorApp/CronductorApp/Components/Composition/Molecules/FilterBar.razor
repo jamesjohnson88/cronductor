@@ -1,15 +1,9 @@
-@using CronductorApp.Components.Composition.Atoms
-
 <!-- Filter Bar Molecule -->
 <div class="is-flex is-justify-content-space-between is-align-items-center mb-6 section-header">
-    <h2 class="title is-4">@Title</h2>
     <SearchInput Placeholder="@Placeholder" Value="@FilterText" OnValueChanged="@OnFilterChanged" />
 </div>
 
 @code {
-    [Parameter]
-    public string Title { get; set; } = string.Empty;
-
     [Parameter]
     public string Placeholder { get; set; } = "Filter...";
 

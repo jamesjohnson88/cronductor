@@ -1,0 +1,40 @@
+@page "/requests/scheduled"
+@page "/requests"
+@rendermode InteractiveServer
+@using CronductorApp.Services
+@inject RequestService RequestService
+
+<PageTitle>Scheduled Requests - Cronductor</PageTitle>
+
+<div class="requests-page">
+    <RequestsSubNav />
+    <ScheduledRequestsSection ScheduledRequests="@RequestService.ScheduledRequests" OnAddRequest="@AddRequest"
+        OnEditRequest="@EditRequest" OnDeleteRequest="@DeleteRequest" />
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!RequestService.ScheduledRequests.Any())
+        {
+            RequestService.InitializeSampleData();
+        }
+    }
+
+    private async Task AddRequest()
+    {
+        // TODO: Navigate to add request page or show modal
+        await Task.CompletedTask;
+    }
+
+    private async Task EditRequest(string requestId)
+    {
+        // TODO: Navigate to edit request page or show modal
+        await Task.CompletedTask;
+    }
+
+    private async Task DeleteRequest(string requestId)
+    {
+        await RequestService.DeleteRequest(requestId);
+    }
+}

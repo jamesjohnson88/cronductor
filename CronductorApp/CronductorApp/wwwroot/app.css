@@ -143,8 +143,8 @@ body {
     z-index: 10;
     background: var(--bulma-background);
     border-bottom: 1px solid hsla(0deg, 0%, 100%, 0.1);
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 0;
+    margin-bottom: 0;
+    padding: 0;
 }
 
 .requests-sub-nav .tabs {
@@ -153,6 +153,10 @@ body {
 
 .requests-sub-nav .tabs ul {
     border-bottom: none;
+}
+
+.requests-sub-nav .tabs li {
+    margin-right: 2px;
 }
 
 .requests-sub-nav .tabs li a {

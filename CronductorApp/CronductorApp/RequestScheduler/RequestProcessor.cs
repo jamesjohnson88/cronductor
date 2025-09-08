@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using CronductorApp.RequestScheduler.Models;
-using Microsoft.Extensions.Logging;
 
 namespace CronductorApp.RequestScheduler;
 

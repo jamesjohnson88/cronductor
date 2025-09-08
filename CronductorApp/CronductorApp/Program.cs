@@ -1,5 +1,6 @@
 using CronductorApp.Components;
 using CronductorApp.RequestScheduler;
+using CronductorApp.Services;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -24,6 +25,7 @@ builder.Services.AddHttpClient<RequestProcessor>(client =>
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ScheduleService>();
 builder.Services.AddSingleton<BackgroundScheduler>();
+builder.Services.AddSingleton<RequestService>();
 
 var app = builder.Build();
 

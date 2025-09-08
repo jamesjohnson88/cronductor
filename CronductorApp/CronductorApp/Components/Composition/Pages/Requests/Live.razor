@@ -1,0 +1,21 @@
+@page "/requests/live"
+@rendermode InteractiveServer
+@using CronductorApp.Services
+@inject RequestService RequestService
+
+<PageTitle>Live Requests - Cronductor</PageTitle>
+
+<div class="requests-page">
+    <RequestsSubNav />
+    <LiveRequestsSection LiveLogs="@RequestService.LiveLogs" />
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!RequestService.LiveLogs.Any())
+        {
+            RequestService.InitializeSampleData();
+        }
+    }
+}

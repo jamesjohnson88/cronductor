@@ -1,0 +1,21 @@
+@page "/requests/history"
+@rendermode InteractiveServer
+@using CronductorApp.Services
+@inject RequestService RequestService
+
+<PageTitle>Request History - Cronductor</PageTitle>
+
+<div class="requests-page">
+    <RequestsSubNav />
+    <RequestHistorySection RequestHistory="@RequestService.RequestHistory" />
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!RequestService.RequestHistory.Any())
+        {
+            RequestService.InitializeSampleData();
+        }
+    }
+}

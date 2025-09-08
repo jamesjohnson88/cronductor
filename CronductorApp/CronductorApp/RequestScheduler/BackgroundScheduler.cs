@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace CronductorApp.RequestScheduler;
+﻿namespace CronductorApp.RequestScheduler;
 
 public class BackgroundScheduler : BackgroundService
 {

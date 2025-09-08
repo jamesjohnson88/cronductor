@@ -1,14 +1,10 @@
-@using CronductorApp.Components.Composition.Atoms
-@using CronductorApp.Components.Composition.Molecules
-@using CronductorApp.Components.Composition.Models
 <!-- Live Requests Section -->
 <div class="live-requests-section">
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6 section-header">
-        <h2 class="title is-4">Live Requests</h2>
         <div class="field has-addons">
             <div class="control">
                 <IconButton IconClass="@(IsLive ? "fas fa-stop" : "fas fa-play")"
-                    Text="@(IsLive ? "Stop Live" : "Start Live")" ButtonClass="@(IsLive ? "is-danger" : "is-success")"
+                    Text="@(IsLive ? "Disconnect" : "Go Live")" ButtonClass="@(IsLive ? "is-danger" : "is-success")"
                     OnClick="@ToggleLive" />
             </div>
             <div class="control">

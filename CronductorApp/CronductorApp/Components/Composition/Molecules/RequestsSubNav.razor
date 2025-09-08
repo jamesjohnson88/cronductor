@@ -1,27 +1,27 @@
-@using CronductorApp.Components.Composition.Atoms
+@inject NavigationManager Navigation
 
 <!-- Sticky Sub Navigation for Requests Page -->
 <nav class="requests-sub-nav">
     <div class="tabs is-boxed">
         <ul>
-            <li class="@(ActiveSection == "scheduled" ? "is-active" : "")">
-                <a @onclick='() => SetActiveSection("scheduled")'>
+            <li class="@(IsActive("/requests/scheduled") || IsActive("/requests") ? "is-active" : "")">
+                <a href="/requests/scheduled">
                     <span class="icon is-small">
                         <i class="fas fa-clock"></i>
                     </span>
                     <span>Scheduled Requests</span>
                 </a>
             </li>
-            <li class="@(ActiveSection == "history" ? "is-active" : "")">
-                <a @onclick='() => SetActiveSection("history")'>
+            <li class="@(IsActive("/requests/history") ? "is-active" : "")">
+                <a href="/requests/history">
                     <span class="icon is-small">
                         <i class="fas fa-history"></i>
                     </span>
                     <span>Request History</span>
                 </a>
             </li>
-            <li class="@(ActiveSection == "live" ? "is-active" : "")">
-                <a @onclick='() => SetActiveSection("live")'>
+            <li class="@(IsActive("/requests/live") ? "is-active" : "")">
+                <a href="/requests/live">
                     <span class="icon is-small">
                         <i class="fas fa-broadcast-tower"></i>
                     </span>
@@ -33,15 +33,18 @@
 </nav>
 
 @code {
-    [Parameter]
-    public string ActiveSection { get; set; } = "scheduled";
-
-    [Parameter]
-    public EventCallback<string> OnSectionChanged { get; set; }
-
-    private async Task SetActiveSection(string section)
+    private bool IsActive(string route)
     {
-        ActiveSection = section;
-        await OnSectionChanged.InvokeAsync(section);
+        var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        // Handle the default route case
+        if (route == "/requests/scheduled" && (currentUri == "requests" || currentUri == "requests/"))
+        {
+            return true;
+        }
+        
+        // Remove leading slash for comparison
+        var routeWithoutSlash = route.TrimStart('/');
+        return currentUri.Equals(routeWithoutSlash, StringComparison.OrdinalIgnoreCase);
     }
 }
