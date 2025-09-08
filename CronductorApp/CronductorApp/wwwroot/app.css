@@ -7,12 +7,17 @@
     --bulma-link-s: 84%;
     --bulma-link-l: 37%;
     --bulma-success-h: 135deg;
-    --bulma-success-s: 70%;
-    --bulma-success-l: 41%;
+    --bulma-success-s: 65%;
+    --bulma-success-l: 30%;
     --bulma-warning-h: 36deg;
-    --bulma-warning-s: 87%;
-    --bulma-warning-l: 59%;
-    --bulma-danger-l: 56%;
+    --bulma-warning-s: 70%;
+    --bulma-warning-l: 45%;
+    --bulma-danger-h: 348deg;
+    --bulma-danger-s: 70%;
+    --bulma-danger-l: 40%;
+    --bulma-info-h: 204deg;
+    --bulma-info-s: 60%;
+    --bulma-info-l: 40%;
     --bulma-scheme-h: 252;
     --bulma-scheme-s: 26%;
     --bulma-hover-background-l-delta: 20%;
@@ -135,6 +140,7 @@ main .container {
 body {
     font-family: var(--bulma-family-sans-serif), sans-serif;
 }
+
 
 /* Standard Button - Enable hover and add subtle hover state */
 .button.is-static {
