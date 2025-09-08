@@ -136,6 +136,23 @@ body {
     font-family: var(--bulma-family-sans-serif), sans-serif;
 }
 
+/* Standard Button - Enable hover and add subtle hover state */
+.button.is-static {
+    pointer-events: auto !important;
+}
+
+.button.is-static:hover {
+    background-color: hsla(0deg, 0%, 100%, 0.05) !important;
+}
+
+/* Fix search input alignment in FilterBar */
+.field.has-addons .input.is-small,
+.field.has-addons .button.is-small {
+    height: 2.25em;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
 /* Requests Page Styling */
 .requests-sub-nav {
     position: sticky;

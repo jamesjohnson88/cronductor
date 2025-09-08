@@ -1,6 +1,6 @@
 <!-- Live Requests Section -->
 <div class="live-requests-section">
-    <div class="is-flex is-justify-content-space-between is-align-items-center mb-6 section-header">
+    <div class="is-flex is-justify-content-flex-end is-align-items-center my-2 section-header">
         <div class="field has-addons">
             <div class="control">
                 <IconButton IconClass="@(IsLive ? "fas fa-stop" : "fas fa-play")"
@@ -42,9 +42,11 @@
     private string LogLevel { get; set; } = "all";
     private ElementReference consoleOutput;
 
-    private List<LiveLogModel> FilteredLogs =>
-    LiveLogs?.Where(l => LogLevel == "all" || l.Level.Equals(LogLevel, StringComparison.OrdinalIgnoreCase))
-    .ToList() ?? new List<LiveLogModel>();
+    private List<LiveLogModel> FilteredLogs => LiveLogs?
+        .Where(l => 
+            LogLevel == "all" 
+            || l.Level.Equals(LogLevel, StringComparison.OrdinalIgnoreCase))
+        .ToList() ?? [];
 
     private async Task ToggleLive()
     {

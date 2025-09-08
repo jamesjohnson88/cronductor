@@ -1,0 +1,31 @@
+﻿<!-- Secondary Button -->
+<button class="button is-primary is-outlined @AdditionalClasses" @onclick="OnClick">
+    @if (!string.IsNullOrEmpty(IconClass))
+    {
+        <span class="icon is-small">
+            <i class="@IconClass"></i>
+        </span>
+    }
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <span>@Text</span>
+    }
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public string? AdditionalClasses { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string? IconClass { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
