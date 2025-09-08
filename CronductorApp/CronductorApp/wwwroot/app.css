@@ -221,6 +221,40 @@ body {
     transition: all 0.2s ease;
 }
 
+.request-item .buttons .button {
+    height: 1.75rem;
+    min-height: 1.75rem;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.neutral-button {
+    background-color: hsla(0deg, 0%, 100%, 0.02) !important;
+    border-color: hsla(0deg, 0%, 100%, 0.1) !important;
+    color: hsla(0deg, 0%, 100%, 0.7) !important;
+    transition: all 0.2s ease;
+}
+
+.neutral-button:hover {
+    background-color: hsla(0deg, 0%, 100%, 0.05) !important;
+    border-color: hsla(0deg, 0%, 100%, 0.15) !important;
+    color: hsla(0deg, 0%, 100%, 0.9) !important;
+}
+
+.request-item .tags {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.request-item .tags .tag {
+    height: 1.75rem;
+    min-height: 1.75rem;
+}
+
 .request-item:hover,
 .history-item:hover {
     background: hsla(0deg, 0%, 100%, 0.06);
