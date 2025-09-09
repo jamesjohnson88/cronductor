@@ -30,6 +30,18 @@
     --bulma-box-shadow: 0 0.25em 0.5em -0.125em hsla(0deg, 0%, 100%, 0.1), 0 0px 0 1px hsla(0deg, 0%, 100%, 0.02);
 }
 
+/* Flat box variant (no glow) */
+.box.is-flat {
+    box-shadow: none !important;
+    --bulma-box-shadow: none;
+}
+
+/* Keep headers container box visual without glow */
+.headers-box {
+    background: hsla(0deg, 0%, 100%, 0.03) !important;
+    border: 1px solid hsla(0deg, 0%, 100%, 0.08) !important;
+}
+
 /* Header */
 header {
     background: linear-gradient(205deg, hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), 15%), hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), 25%));
@@ -231,6 +243,12 @@ body {
     justify-content: center;
 }
 
+/* Normalize gap between separate `.buttons` groups */
+.request-item .buttons {
+    gap: 0.5rem;
+    margin-bottom: 0;
+}
+
 .neutral-button {
     background-color: hsla(0deg, 0%, 100%, 0.02) !important;
     border-color: hsla(0deg, 0%, 100%, 0.1) !important;
@@ -253,6 +271,12 @@ body {
 .request-item .tags .tag {
     height: 1.75rem;
     min-height: 1.75rem;
+}
+
+/* Scheduled Edit Panel - square top corners when attached to sticky subnav */
+.scheduled-edit-panel {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
 }
 
 .request-item:hover,

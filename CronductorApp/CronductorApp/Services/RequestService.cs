@@ -9,8 +9,6 @@ public class RequestService
     public List<LiveLogModel> LiveLogs { get; set; } = new();
 
     public event Action? OnScheduledRequestsChanged;
-    public event Action? OnRequestHistoryChanged;
-    public event Action? OnLiveLogsChanged;
 
     public void InitializeSampleData()
     {

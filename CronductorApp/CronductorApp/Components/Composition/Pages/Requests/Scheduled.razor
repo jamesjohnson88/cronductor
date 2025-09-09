@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @using CronductorApp.Services
 @inject RequestService RequestService
+@inject NavigationManager Navigation
 
 <PageTitle>Scheduled Requests - Cronductor</PageTitle>
 
@@ -23,13 +24,13 @@
 
     private async Task AddRequest()
     {
-        // TODO: Navigate to add request page or show modal
+        Navigation.NavigateTo("/requests/scheduled/new");
         await Task.CompletedTask;
     }
 
     private async Task EditRequest(string requestId)
     {
-        // TODO: Navigate to edit request page or show modal
+        Navigation.NavigateTo($"/requests/scheduled/edit/{requestId}");
         await Task.CompletedTask;
     }
 

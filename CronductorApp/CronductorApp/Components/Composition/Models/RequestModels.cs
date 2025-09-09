@@ -11,6 +11,12 @@ public class RequestModel
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastExecuted { get; set; }
+
+    // Extended request configuration for add/edit
+    public string Method { get; set; } = "GET";
+    public string? ContentType { get; set; } = "application/json";
+    public List<HeaderItem> Headers { get; set; } = new();
+    public string? BodyJson { get; set; } = string.Empty;
 }
 
 public class HistoryModel
@@ -36,4 +42,10 @@ public class LiveLogModel
     public string Message { get; set; } = string.Empty;
     public string Details { get; set; } = string.Empty;
     public DateTime Timestamp { get; set; }
+}
+
+public class HeaderItem
+{
+    public string Key { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
 }

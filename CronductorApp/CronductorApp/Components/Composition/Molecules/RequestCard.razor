@@ -1,3 +1,5 @@
+@using CronductorApp.Services
+@inject RequestService RequestService
 <!-- Request Card Molecule -->
 <div class="box request-item p-4">
     <div class="mb-3">
@@ -6,28 +8,46 @@
     </div>
     <div class="columns is-vcentered is-mobile">
         <div class="column">
-                    <div class="tags">
-                        <StatusTag Text="@Request.Schedule" Status="info" />
-                        <StatusTag Text="@(Request.IsActive? "Active" : "Inactive")"
-                            Status="@(Request.IsActive? "active" : "inactive")" />
-                    </div>
-                </div>
-                <div class="column is-narrow">
-                    <EditDeleteButtons ItemId="@Request.Id" OnEdit="@OnEdit" OnDelete="@OnDelete" />
-                </div>
+            <div class="tags">
+                <StatusTag Text="@Request.Schedule" Status="info" />
+                <StatusTag Text="@GetStatusText()" Status="@GetStatusClass()" />
             </div>
         </div>
+        <div class="column is-narrow is-flex is-align-items-center">
+            <div class="buttons mr-2">
+                <IconButton IconClass="@GetToggleIcon()" ButtonClass="neutral-button" OnClick="ToggleActive" />
+            </div>
+            <EditDeleteButtons ItemId="@Request.Id" OnEdit="@OnEdit" OnDelete="@OnDelete" />
+        </div>
+    </div>
+</div>
 
 @code {
-   
     [Parameter]
-        public RequestModel Request { get; set; } = new();
-    
-        [Parameter]
+    public RequestModel Request { get; set; } = new();
+
+    [Parameter]
     public EventCallback<string> OnEdit { get; set; }
-    
-        [Parameter]
+
+    [Parameter]
     public EventCallback<string> OnDelete { get; set; }
-    
- }   
-    
+
+    private async Task ToggleActive()
+    {
+        Request.IsActive = !Request.IsActive;
+        var existing = RequestService.ScheduledRequests.FirstOrDefault(r => r.Id == Request.Id);
+        if (existing != null)
+        {
+            existing.IsActive = Request.IsActive;
+            await RequestService.EditRequest(Request.Id, existing);
+        }
+        else
+        {
+            await RequestService.EditRequest(Request.Id, Request);
+        }
+    }
+
+    private string GetStatusText() => Request.IsActive ? "Running" : "Paused";
+    private string GetStatusClass() => Request.IsActive ? "active" : "inactive";
+    private string GetToggleIcon() => Request.IsActive ? "fas fa-pause" : "fas fa-play";
+}

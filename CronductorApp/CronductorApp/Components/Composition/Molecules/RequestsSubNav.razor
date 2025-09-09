@@ -4,7 +4,8 @@
 <nav class="requests-sub-nav">
     <div class="tabs is-boxed">
         <ul>
-            <li class="@(IsActive("/requests/scheduled") || IsActive("/requests") ? "is-active" : "")">
+            <li
+                class="@(IsActive("/requests/scheduled") || IsActive("/requests") || IsActivePrefix("/requests/scheduled/edit") || IsActivePrefix("/requests/scheduled/new") ? "is-active" : "")">
                 <a href="/requests/scheduled">
                     <span class="icon is-small">
                         <i class="fas fa-clock"></i>
@@ -36,15 +37,22 @@
     private bool IsActive(string route)
     {
         var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri);
-        
+
         // Handle the default route case
         if (route == "/requests/scheduled" && (currentUri == "requests" || currentUri == "requests/"))
         {
             return true;
         }
-        
+
         // Remove leading slash for comparison
         var routeWithoutSlash = route.TrimStart('/');
         return currentUri.Equals(routeWithoutSlash, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsActivePrefix(string routePrefix)
+    {
+        var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var prefix = routePrefix.TrimStart('/');
+        return currentUri.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
     }
 }
