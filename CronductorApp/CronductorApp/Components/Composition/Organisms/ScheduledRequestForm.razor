@@ -1,0 +1,76 @@
+@using CronductorApp.Components.Composition.Models
+@using CronductorApp.Components.Composition.Molecules
+@using CronductorApp.Components.Composition.Atoms
+
+<!-- ScheduledRequestForm Organism -->
+<div class="columns is-multiline">
+    <div class="column is-12">
+        <LabeledInput Label="Name" Placeholder="e.g., Health Check API" Value="@Model.Name"
+            ValueChanged="@(v => Model.Name = v)"
+            HelpText="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Name) ? "Name is required." : null)"
+            HelpClass="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Name) ? "help is-danger" : string.Empty)" />
+    </div>
+
+    <div class="column is-12">
+        <LabeledInput Label="URL" Placeholder="https://api.example.com/endpoint" Value="@Model.Url"
+            ValueChanged="@(v => Model.Url = v)"
+            HelpText="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Url) ? "URL is required." : null)"
+            HelpClass="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Url) ? "help is-danger" : string.Empty)" />
+    </div>
+
+    <div class="column is-12">
+        <MethodAndContentType Method="@Model.Method" MethodChanged="@(v => Model.Method = v)"
+            ContentType="@Model.ContentType" ContentTypeChanged="@(v => Model.ContentType = v)" />
+    </div>
+
+    <div class="column is-12">
+        <LabeledInput Label="Schedule" Placeholder="e.g., Every 5 minutes or cron like */5 * * * * *"
+            Value="@Model.Schedule" ValueChanged="@(v => Model.Schedule = v)"
+            HelpText="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Schedule) ? "Schedule is required." : null)"
+            HelpClass="@(ShowValidation && string.IsNullOrWhiteSpace(Model.Schedule) ? "help is-danger" : string.Empty)" />
+    </div>
+
+    <div class="column is-12">
+        <HeadersEditor Headers="Model.Headers" />
+    </div>
+
+    @if (AllowsBody(Model.Method))
+    {
+        <div class="column is-12">
+            <JsonBodyEditor Label="Body (JSON)" Value="@Model.BodyJson" ValueChanged="@(v => Model.BodyJson = v)"
+                Rows="8" />
+        </div>
+    }
+
+    <div class="column is-12">
+        <div class="field is-grouped is-grouped-right">
+            <div class="control">
+                <SecondaryButton IconClass="fas fa-times" Text="Cancel" AdditionalClasses="is-small"
+                    OnClick="OnCancel" />
+            </div>
+            <div class="control">
+                <PrimaryButton IconClass="fas fa-save" Text="Save" AdditionalClasses="is-small" OnClick="OnSave" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RequestModel Model { get; set; } = new();
+
+    [Parameter]
+    public bool ShowValidation { get; set; }
+
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private bool AllowsBody(string method)
+    {
+        return !string.Equals(method, "GET", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(method, "DELETE", StringComparison.OrdinalIgnoreCase);
+    }
+}

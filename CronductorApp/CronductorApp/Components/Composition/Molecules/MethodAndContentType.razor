@@ -1,0 +1,66 @@
+@using CronductorApp.Components.ViewModels
+
+<!-- Method and Content-Type Molecule -->
+<div class="columns is-mobile">
+    <div class="column is-4">
+        <div class="field">
+            <label class="label is-small">Method</label>
+            <div class="control is-fullwidth">
+                <SelectDropdown Value="@Method" Options="@MethodOptions" OnValueChanged="OnMethodChanged" />
+            </div>
+        </div>
+    </div>
+    <div class="column is-8">
+        <div class="field">
+            <label class="label is-small">Content Type</label>
+            <div class="control is-fullwidth">
+                <SelectDropdown Value="@ContentType" Options="@ContentTypeOptions" OnValueChanged="OnContentTypeChanged" />
+            </div>
+        </div>
+    </div>
+}</div>
+
+@code {
+    [Parameter]
+    public string Method { get; set; } = "GET";
+
+    [Parameter]
+    public EventCallback<string> MethodChanged { get; set; }
+
+    [Parameter]
+    public string ContentType { get; set; } = "application/json";
+
+    [Parameter]
+    public EventCallback<string> ContentTypeChanged { get; set; }
+
+    private readonly List<SelectOption> MethodOptions = new()
+    {
+        new SelectOption { Value = "GET", Text = "GET" },
+        new SelectOption { Value = "POST", Text = "POST" },
+        new SelectOption { Value = "PUT", Text = "PUT" },
+        new SelectOption { Value = "PATCH", Text = "PATCH" },
+        new SelectOption { Value = "DELETE", Text = "DELETE" },
+    };
+
+    private readonly List<SelectOption> ContentTypeOptions = new()
+    {
+        new SelectOption { Value = "application/json", Text = "application/json" },
+        new SelectOption { Value = "application/xml", Text = "application/xml" },
+        new SelectOption { Value = "text/plain", Text = "text/plain" },
+        new SelectOption { Value = "application/x-www-form-urlencoded", Text = "application/x-www-form-urlencoded" },
+    };
+
+    private async Task OnMethodChanged(string value)
+    {
+        Method = value;
+        await MethodChanged.InvokeAsync(value);
+    }
+
+    private async Task OnContentTypeChanged(string value)
+    {
+        ContentType = value;
+        await ContentTypeChanged.InvokeAsync(value);
+    }
+}
+
+

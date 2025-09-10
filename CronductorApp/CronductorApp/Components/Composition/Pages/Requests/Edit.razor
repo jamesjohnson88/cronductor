@@ -1,6 +1,9 @@
 @page "/requests/scheduled/new"
 @page "/requests/scheduled/edit/{RequestId}"
 @rendermode InteractiveServer
+@using CronductorApp.Components.Composition.Molecules
+@using CronductorApp.Components.Composition.Organisms
+@using CronductorApp.Components.Composition.Atoms
 @using CronductorApp.Services
 @inject RequestService RequestService
 @inject NavigationManager Navigation
@@ -16,140 +19,7 @@
             <p class="subtitle is-7 has-text-grey-light">Configure the request details and schedule.</p>
         </div>
 
-        <div class="columns is-multiline">
-            <div class="column is-12">
-                <div class="field">
-                    <label class="label is-small">Name</label>
-                    <div class="control">
-                        <input class="input is-small" placeholder="e.g., Health Check API" @bind="Model.Name" />
-                    </div>
-                    @if (ShowValidation && string.IsNullOrWhiteSpace(Model.Name))
-                    {
-                        <p class="help is-danger">Name is required.</p>
-                    }
-                </div>
-            </div>
-
-            <div class="column is-12">
-                <div class="field">
-                    <label class="label is-small">URL</label>
-                    <div class="control">
-                        <input class="input is-small" placeholder="https://api.example.com/endpoint"
-                            @bind="Model.Url" />
-                    </div>
-                    @if (ShowValidation && string.IsNullOrWhiteSpace(Model.Url))
-                    {
-                        <p class="help is-danger">URL is required.</p>
-                    }
-                </div>
-            </div>
-
-
-
-            <div class="column is-12">
-                <div class="columns is-mobile">
-                    <div class="column is-4">
-                        <div class="field">
-                            <label class="label is-small">Method</label>
-                            <div class="control">
-                                <div class="select is-small is-fullwidth">
-                                    <select @bind="Model.Method">
-                                        <option>GET</option>
-                                        <option>POST</option>
-                                        <option>PUT</option>
-                                        <option>PATCH</option>
-                                        <option>DELETE</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-8">
-                        <div class="field">
-                            <label class="label is-small">Content Type</label>
-                            <div class="control">
-                                <div class="select is-small is-fullwidth">
-                                    <select @bind="Model.ContentType">
-                                        <option value="application/json">application/json</option>
-                                        <option value="application/xml">application/xml</option>
-                                        <option value="text/plain">text/plain</option>
-                                        <option value="application/x-www-form-urlencoded">
-                                            application/x-www-form-urlencoded</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="column is-12">
-                <div class="field">
-                    <label class="label is-small">Schedule</label>
-                    <div class="control">
-                        <input class="input is-small" placeholder="e.g., Every 5 minutes or cron like */5 * * * * *"
-                            @bind="Model.Schedule" />
-                    </div>
-                    @if (ShowValidation && string.IsNullOrWhiteSpace(Model.Schedule))
-                    {
-                        <p class="help is-danger">Schedule is required.</p>
-                    }
-                </div>
-            </div>
-
-            <div class="column is-12">
-                <div class="field">
-                    <label class="label is-small">Headers</label>
-                    <div class="box p-3 is-flat headers-box">
-                        @foreach (var header in Model.Headers)
-                        {
-                            <div class="columns is-mobile is-vcentered mb-2">
-                                <div class="column">
-                                    <input class="input is-small" placeholder="Key" @bind="header.Key" />
-                                </div>
-                                <div class="column">
-                                    <input class="input is-small" placeholder="Value" @bind="header.Value" />
-                                </div>
-                                <div class="column is-narrow">
-                                    <IconButton IconClass="fas fa-trash" ButtonClass="neutral-button is-small"
-                                        OnClick="() => RemoveHeader(header)" />
-                                </div>
-                            </div>
-                        }
-                        <div class="mt-2 has-text-centered">
-                            <SecondaryButton IconClass="fas fa-plus" Text="Add Header"
-                                AdditionalClasses="is-small neutral-button" OnClick="AddHeader" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @if (AllowsBody(Model.Method))
-            {
-                <div class="column is-12">
-                    <div class="field">
-                        <label class="label is-small">Body (JSON)</label>
-                        <div class="control">
-                            <textarea class="textarea is-small" rows="8" placeholder="{&quot;key&quot;:&quot;value&quot;}"
-                                @bind="Model.BodyJson"></textarea>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <div class="column is-12">
-                <div class="field is-grouped is-grouped-right">
-                    <div class="control">
-                        <SecondaryButton IconClass="fas fa-times" Text="Cancel" AdditionalClasses="is-small"
-                            OnClick="Cancel" />
-                    </div>
-                    <div class="control">
-                        <PrimaryButton IconClass="fas fa-save" Text="Save" AdditionalClasses="is-small"
-                            OnClick="Save" />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ScheduledRequestForm Model="Model" ShowValidation="ShowValidation" OnSave="Save" OnCancel="Cancel" />
     </div>
 </div>
 
@@ -234,19 +104,4 @@
         && !string.IsNullOrWhiteSpace(Model.Schedule);
     }
 
-    private void AddHeader()
-    {
-        Model.Headers.Add(new HeaderItem());
-    }
-
-    private void RemoveHeader(HeaderItem header)
-    {
-        Model.Headers.Remove(header);
-    }
-
-    private bool AllowsBody(string method)
-    {
-        return !string.Equals(method, "GET", StringComparison.OrdinalIgnoreCase)
-        && !string.Equals(method, "DELETE", StringComparison.OrdinalIgnoreCase);
-    }
 }

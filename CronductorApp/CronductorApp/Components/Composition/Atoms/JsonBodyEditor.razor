@@ -1,0 +1,42 @@
+<!-- JsonBodyEditor Atom -->
+<div class="field">
+    <label class="label is-small">@Label</label>
+    <div class="control">
+        <textarea class="textarea is-small" rows="@Rows" placeholder='@Placeholder'
+            @oninput="OnValueChangedInternal">@Value</textarea>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelpText))
+    {
+        <p class="help @HelpClass">@HelpText</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "Body (JSON)";
+
+    [Parameter]
+    public string Placeholder { get; set; } = "{\"key\":\"value\"}";
+
+    [Parameter]
+    public int Rows { get; set; } = 8;
+
+    [Parameter]
+    public string? Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? HelpText { get; set; }
+
+    [Parameter]
+    public string HelpClass { get; set; } = string.Empty;
+
+    private async Task OnValueChangedInternal(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
+

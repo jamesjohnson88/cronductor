@@ -1,0 +1,42 @@
+@using CronductorApp.Components.Composition.Models
+
+<!-- HeadersEditor Molecule -->
+<div class="field">
+    <label class="label is-small">Headers</label>
+    <div class="box p-3 is-flat headers-box">
+        @foreach (var header in Headers)
+        {
+            <div class="columns is-mobile is-vcentered mb-2">
+                <div class="column">
+                    <input class="input is-small" placeholder="Key" @bind="header.Key" />
+                </div>
+                <div class="column">
+                    <input class="input is-small" placeholder="Value" @bind="header.Value" />
+                </div>
+                <div class="column is-narrow">
+                    <IconButton IconClass="fas fa-trash" ButtonClass="neutral-button is-small"
+                        OnClick="() => RemoveHeader(header)" />
+                </div>
+            </div>
+        }
+        <div class="mt-2 has-text-centered">
+            <SecondaryButton IconClass="fas fa-plus" Text="Add Header" AdditionalClasses="is-small neutral-button"
+                OnClick="AddHeader" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<HeaderItem> Headers { get; set; } = new();
+
+    private void AddHeader()
+    {
+        Headers.Add(new HeaderItem());
+    }
+
+    private void RemoveHeader(HeaderItem header)
+    {
+        Headers.Remove(header);
+    }
+}
