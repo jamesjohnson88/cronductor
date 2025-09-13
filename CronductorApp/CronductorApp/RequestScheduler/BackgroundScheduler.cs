@@ -44,10 +44,11 @@ public class BackgroundScheduler : BackgroundService
 
     private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
+        var nowUtc = _timeProvider.GetUtcNow().UtcDateTime;
+        
         try
         {
-            var hasNext = _scheduleService.PeekNextSchedule(out var executionTime);
-            if (hasNext && executionTime < _timeProvider.GetLocalNow())
+            while (_scheduleService.PeekNextSchedule(out var executionTime) && executionTime <= nowUtc)
             {
                 var nextScheduledRequest = _scheduleService.DequeueNextSchedule();
                 _logger.LogDebug("Processing scheduled request {RequestName} at {ExecutionTime}",
