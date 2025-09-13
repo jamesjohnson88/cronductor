@@ -25,8 +25,9 @@ builder.Services.AddHttpClient<RequestProcessor>(client =>
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ScheduleStorageService>();
 builder.Services.AddSingleton<ScheduleService>();
-builder.Services.AddSingleton<BackgroundScheduler>();
 builder.Services.AddSingleton<RequestService>(); // temp - remove
+
+builder.Services.AddHostedService<BackgroundScheduler>();
 
 var app = builder.Build();
 
