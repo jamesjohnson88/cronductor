@@ -23,9 +23,10 @@ builder.Services.AddHttpClient<RequestProcessor>(client =>
 .AddPolicyHandler(GetRetryPolicy());
 
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<ScheduleStorageService>();
 builder.Services.AddSingleton<ScheduleService>();
 builder.Services.AddSingleton<BackgroundScheduler>();
-builder.Services.AddSingleton<RequestService>();
+builder.Services.AddSingleton<RequestService>(); // temp - remove
 
 var app = builder.Build();
 

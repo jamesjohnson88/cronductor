@@ -58,9 +58,9 @@ public class RequestProcessor
             rq.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
         }
 
-        foreach (var (key, value) in request.Headers)
+        foreach (var h in request.Headers)
         {
-            rq.Headers.TryAddWithoutValidation(key, value);
+            rq.Headers.TryAddWithoutValidation(h.Key, h.Value);
         }
 
         return rq;

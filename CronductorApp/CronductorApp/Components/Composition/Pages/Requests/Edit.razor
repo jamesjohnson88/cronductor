@@ -1,11 +1,9 @@
 @page "/requests/scheduled/new"
 @page "/requests/scheduled/edit/{RequestId}"
 @rendermode InteractiveServer
-@using CronductorApp.Components.Composition.Molecules
-@using CronductorApp.Components.Composition.Organisms
-@using CronductorApp.Components.Composition.Atoms
-@using CronductorApp.Services
-@inject RequestService RequestService
+@using CronductorApp.RequestScheduler
+@using CronductorApp.RequestScheduler.Models
+@inject ScheduleService ScheduleService
 @inject NavigationManager Navigation
 
 <PageTitle>@(IsEdit ? "Edit Scheduled Request - Cronductor" : "Add Scheduled Request - Cronductor")</PageTitle>
@@ -27,7 +25,7 @@
     [Parameter]
     public string? RequestId { get; set; }
 
-    private RequestModel Model { get; set; } = new();
+    private ScheduledRequest Model { get; set; } = new();
     private bool IsEdit => !string.IsNullOrWhiteSpace(RequestId);
     private bool ShowValidation { get; set; }
 
@@ -35,23 +33,23 @@
     {
         if (IsEdit)
         {
-            var existing = RequestService.ScheduledRequests.FirstOrDefault(r => r.Id == RequestId);
+            // todo - should maybe call storage directly here? (once impl)
+            var existing = ScheduleService.RequestDefinitions.FirstOrDefault(r => r.Id == RequestId);
             if (existing != null)
             {
-                Model = new RequestModel
+                Model = new ScheduledRequest()
                 {
                     Id = existing.Id,
                     Name = existing.Name,
                     Url = existing.Url,
-                    Schedule = existing.Schedule,
+                    CronSchedule = existing.CronSchedule,
                     IsActive = existing.IsActive,
                     CreatedAt = existing.CreatedAt,
                     LastExecuted = existing.LastExecuted,
                     Method = string.IsNullOrWhiteSpace(existing.Method) ? "GET" : existing.Method,
                     ContentType = string.IsNullOrWhiteSpace(existing.ContentType) ? "application/json" : existing.ContentType,
-                    Headers = existing.Headers?.Select(h => new HeaderItem { Key = h.Key, Value = h.Value }).ToList() ?? new
-                List<HeaderItem>(),
-                    BodyJson = existing.BodyJson
+                    Headers = existing.Headers,
+                    Body = existing.Body
                 };
             }
             else
@@ -62,11 +60,7 @@
         }
         else
         {
-            Model = new RequestModel
-            {
-                IsActive = true,
-                CreatedAt = DateTime.Now
-            };
+            Model = new ScheduledRequest();
         }
     }
 
@@ -80,13 +74,13 @@
 
         if (IsEdit)
         {
-            await RequestService.EditRequest(Model.Id, Model);
+            // todo - needs some thoughts in sync between storage and service
+            // when we update here, service also needs to update its internal list
+            //await ScheduleService.EditRequest(Model.Id, Model);
         }
         else
         {
-            Model.Id = Guid.NewGuid().ToString("N");
-            Model.CreatedAt = DateTime.Now;
-            await RequestService.AddRequest(Model);
+            await ScheduleService.AddScheduleAsync(Model);
         }
 
         Navigation.NavigateTo("/requests/scheduled");
@@ -99,9 +93,10 @@
 
     private bool Validate()
     {
+        // use fluent but inject and validate here?
         return !string.IsNullOrWhiteSpace(Model.Name)
         && !string.IsNullOrWhiteSpace(Model.Url)
-        && !string.IsNullOrWhiteSpace(Model.Schedule);
+        && !string.IsNullOrWhiteSpace(Model.CronSchedule);
     }
 
 }

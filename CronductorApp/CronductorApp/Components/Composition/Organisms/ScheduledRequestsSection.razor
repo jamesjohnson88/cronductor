@@ -1,3 +1,4 @@
+@using CronductorApp.RequestScheduler.Models
 <!-- Scheduled Requests Section -->
 <div class="scheduled-requests-section">
     <div class="is-flex is-justify-content-flex-end is-align-items-center my-2 section-header">
@@ -9,7 +10,10 @@
         {
             @foreach (var request in ScheduledRequests)
             {
-                <RequestCard Request="@request" OnEdit="@EditRequest" OnDelete="@DeleteRequest" />
+                <RequestCard 
+                    Request="@request" 
+                    OnEdit="@EditRequest" 
+                    OnDelete="@DeleteRequest" />
             }
         }
         else
@@ -26,7 +30,7 @@
 
 @code {
     [Parameter]
-    public List<RequestModel>? ScheduledRequests { get; set; }
+    public List<ScheduledRequest>? ScheduledRequests { get; set; }
 
     [Parameter]
     public EventCallback OnAddRequest { get; set; }

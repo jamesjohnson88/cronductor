@@ -1,5 +1,7 @@
-@using CronductorApp.Services
-@inject RequestService RequestService
+@using CronductorApp.RequestScheduler
+@using CronductorApp.RequestScheduler.Models
+@inject ScheduleService ScheduleService
+
 <!-- Request Card Molecule -->
 <div class="box request-item p-4">
     <div class="mb-3">
@@ -9,7 +11,7 @@
     <div class="columns is-vcentered is-mobile">
         <div class="column">
             <div class="tags">
-                <StatusTag Text="@Request.Schedule" Status="info" />
+                <StatusTag Text="@Request.CronSchedule" Status="info" />
                 <StatusTag Text="@GetStatusText()" Status="@GetStatusClass()" />
             </div>
         </div>
@@ -24,7 +26,7 @@
 
 @code {
     [Parameter]
-    public RequestModel Request { get; set; } = new();
+    public ScheduledRequest Request { get; set; } = new();
 
     [Parameter]
     public EventCallback<string> OnEdit { get; set; }
@@ -35,15 +37,15 @@
     private async Task ToggleActive()
     {
         Request.IsActive = !Request.IsActive;
-        var existing = RequestService.ScheduledRequests.FirstOrDefault(r => r.Id == Request.Id);
+        var existing = ScheduleService.RequestDefinitions.FirstOrDefault(r => r.Id == Request.Id);
         if (existing != null)
         {
             existing.IsActive = Request.IsActive;
-            await RequestService.EditRequest(Request.Id, existing);
+            //await ScheduleService.EditRequest(Request.Id, existing);
         }
         else
         {
-            await RequestService.EditRequest(Request.Id, Request);
+            //await ScheduleService.EditRequest(Request.Id, Request);
         }
     }
 
