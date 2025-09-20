@@ -9,11 +9,8 @@
 
 <div class="requests-page">
     <RequestsSubNav />
-    <ScheduledRequestsSection 
-        ScheduledRequests="@ScheduleService.RequestDefinitions" 
-        OnAddRequest="@AddRequest"
-        OnEditRequest="@EditRequest" 
-        OnDeleteRequest="@DeleteRequest" />
+    <ScheduledRequestsSection ScheduledRequests="@ScheduleService.RequestDefinitions" OnAddRequest="@AddRequest"
+        OnEditRequest="@EditRequest" OnDeleteRequest="@DeleteRequest" />
 </div>
 
 @code {
@@ -36,6 +33,6 @@
 
     private async Task DeleteRequest(string requestId)
     {
-        await ScheduleService.RemoveScheduleAsync(requestId);
+        await ScheduleService.DeleteDefinitionAsync(requestId);
     }
 }

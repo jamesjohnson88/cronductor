@@ -36,16 +36,13 @@
 
     private async Task ToggleActive()
     {
-        Request.IsActive = !Request.IsActive;
-        var existing = ScheduleService.RequestDefinitions.FirstOrDefault(r => r.Id == Request.Id);
-        if (existing != null)
+        if (Request.IsActive)
         {
-            existing.IsActive = Request.IsActive;
-            //await ScheduleService.EditRequest(Request.Id, existing);
+            await ScheduleService.PauseDefinitionAsync(Request.Id);
         }
         else
         {
-            //await ScheduleService.EditRequest(Request.Id, Request);
+            await ScheduleService.ResumeDefinitionAsync(Request.Id);
         }
     }
 

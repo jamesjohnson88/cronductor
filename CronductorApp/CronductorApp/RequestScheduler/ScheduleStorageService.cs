@@ -6,12 +6,18 @@ namespace CronductorApp.RequestScheduler;
 public class ScheduleStorageService(ILogger<ScheduleStorageService> logger)
 {
     private readonly List<ScheduledRequest> _scheduledRequests = [];
-    
+
+    public async Task<ScheduledRequest?> GetByIdAsync(string requestId)
+    {
+        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestId);
+        return await Task.FromResult(existingRequest);
+    }
+
     public async Task<IList<ScheduledRequest>> GetScheduledRequests()
     {
         return _scheduledRequests;
     }
-    
+
     public async Task StoreScheduledRequest(ScheduledRequest request)
     {
         _scheduledRequests.Add(request);

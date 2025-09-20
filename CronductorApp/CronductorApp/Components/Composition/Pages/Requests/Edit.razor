@@ -72,16 +72,7 @@
             return;
         }
 
-        if (IsEdit)
-        {
-            // todo - needs some thoughts in sync between storage and service
-            // when we update here, service also needs to update its internal list
-            //await ScheduleService.EditRequest(Model.Id, Model);
-        }
-        else
-        {
-            await ScheduleService.AddScheduleAsync(Model);
-        }
+        await ScheduleService.AddOrUpdateDefinitionAsync(Model);
 
         Navigation.NavigateTo("/requests/scheduled");
     }
