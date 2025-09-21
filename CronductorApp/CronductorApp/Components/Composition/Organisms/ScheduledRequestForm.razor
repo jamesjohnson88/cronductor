@@ -1,5 +1,4 @@
 @using CronductorApp.RequestScheduler.Models
-
 <!-- ScheduledRequestForm Organism -->
 <div class="columns is-multiline">
     <div class="column is-12">
@@ -55,7 +54,7 @@
 
 @code {
     [Parameter]
-    public ScheduledRequest Model { get; set; } = new();
+    public RequestDefinitions Model { get; set; } = new();
 
     [Parameter]
     public bool ShowValidation { get; set; }

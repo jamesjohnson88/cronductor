@@ -1,5 +1,6 @@
 using CronductorApp.Components;
 using CronductorApp.RequestScheduler;
+using CronductorApp.RequestScheduler.Data;
 using CronductorApp.Services;
 using Polly;
 using Polly.Extensions.Http;
@@ -23,7 +24,7 @@ builder.Services.AddHttpClient<RequestProcessor>(client =>
 .AddPolicyHandler(GetRetryPolicy());
 
 builder.Services.AddSingleton(TimeProvider.System);
-builder.Services.AddSingleton<ScheduleStorageService>();
+builder.Services.AddSingleton<RequestDefinitionRepository>();
 builder.Services.AddSingleton<ScheduleService>();
 builder.Services.AddSingleton<RequestService>(); // temp - remove
 

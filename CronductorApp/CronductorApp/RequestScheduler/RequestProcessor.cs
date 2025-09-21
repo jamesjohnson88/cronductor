@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Headers;
-using CronductorApp.RequestScheduler.Models;
 
 namespace CronductorApp.RequestScheduler;
 
@@ -14,51 +13,51 @@ public class RequestProcessor
         _logger = logger;
     }
 
-    public async Task ProcessRequest(ScheduledRequest request)
+    public async Task ProcessRequest(Models.RequestDefinitions requestDefinitions)
     {
         try
         {
-            _logger.LogInformation("Processing scheduled request: {RequestName}", request.Name);
+            _logger.LogInformation("Processing scheduled request: {RequestName}", requestDefinitions.Name);
 
-            var response = await _client.SendAsync(CreateHttpRequestMessage(request), CancellationToken.None);
+            var response = await _client.SendAsync(CreateHttpRequestMessage(requestDefinitions), CancellationToken.None);
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Successfully processed request {RequestName} - Status: {StatusCode}",
-                    request.Name, response.StatusCode);
+                    requestDefinitions.Name, response.StatusCode);
             }
             else
             {
                 _logger.LogWarning("Failed to process request {RequestName} - Status: {StatusCode}, Reason: {Reason}",
-                    request.Name, response.StatusCode, response.ReasonPhrase);
+                    requestDefinitions.Name, response.StatusCode, response.ReasonPhrase);
             }
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "HTTP request failed for {RequestName}: {Message}", request.Name, ex.Message);
+            _logger.LogError(ex, "HTTP request failed for {RequestName}: {Message}", requestDefinitions.Name, ex.Message);
         }
         catch (TaskCanceledException ex)
         {
-            _logger.LogError(ex, "Request timeout for {RequestName}: {Message}", request.Name, ex.Message);
+            _logger.LogError(ex, "Request timeout for {RequestName}: {Message}", requestDefinitions.Name, ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error processing request {RequestName}: {Message}", request.Name, ex.Message);
+            _logger.LogError(ex, "Unexpected error processing request {RequestName}: {Message}", requestDefinitions.Name, ex.Message);
         }
     }
 
-    private static HttpRequestMessage CreateHttpRequestMessage(ScheduledRequest request)
+    private static HttpRequestMessage CreateHttpRequestMessage(Models.RequestDefinitions requestDefinitions)
     {
-        var rq = new HttpRequestMessage(HttpMethod.Parse(request.Method), request.Url)
+        var rq = new HttpRequestMessage(HttpMethod.Parse(requestDefinitions.Method), requestDefinitions.Url)
         {
-            Content = request.Body as HttpContent ?? JsonContent.Create(request.Body)
+            Content = requestDefinitions.Body as HttpContent ?? JsonContent.Create(requestDefinitions.Body)
         };
 
-        if (request.ContentType is not null)
+        if (requestDefinitions.ContentType is not null)
         {
-            rq.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
+            rq.Content.Headers.ContentType = new MediaTypeHeaderValue(requestDefinitions.ContentType);
         }
 
-        foreach (var h in request.Headers)
+        foreach (var h in requestDefinitions.Headers)
         {
             rq.Headers.TryAddWithoutValidation(h.Key, h.Value);
         }

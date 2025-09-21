@@ -2,7 +2,9 @@
 @page "/requests/scheduled/edit/{RequestId}"
 @rendermode InteractiveServer
 @using CronductorApp.RequestScheduler
+@using CronductorApp.RequestScheduler.Data
 @using CronductorApp.RequestScheduler.Models
+@inject RequestDefinitionRepository Repository
 @inject ScheduleService ScheduleService
 @inject NavigationManager Navigation
 
@@ -25,19 +27,19 @@
     [Parameter]
     public string? RequestId { get; set; }
 
-    private ScheduledRequest Model { get; set; } = new();
+    private RequestDefinitions Model { get; set; } = new();
     private bool IsEdit => !string.IsNullOrWhiteSpace(RequestId);
     private bool ShowValidation { get; set; }
 
     protected override void OnInitialized()
     {
-        if (IsEdit)
+        if (IsEdit && !string.IsNullOrEmpty(RequestId))
         {
             // todo - should maybe call storage directly here? (once impl)
-            var existing = ScheduleService.RequestDefinitions.FirstOrDefault(r => r.Id == RequestId);
+            var existing = Repository.GetByIdAsync(RequestId).Result; // todo - can this be improved within the init?
             if (existing != null)
             {
-                Model = new ScheduledRequest()
+                Model = new RequestDefinitions()
                 {
                     Id = existing.Id,
                     Name = existing.Name,
@@ -60,7 +62,7 @@
         }
         else
         {
-            Model = new ScheduledRequest();
+            Model = new RequestDefinitions();
         }
     }
 

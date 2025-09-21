@@ -11,7 +11,7 @@
             @foreach (var request in ScheduledRequests)
             {
                 <RequestCard 
-                    Request="@request" 
+                    RequestDefinitions="@request" 
                     OnEdit="@EditRequest" 
                     OnDelete="@DeleteRequest" />
             }
@@ -30,7 +30,7 @@
 
 @code {
     [Parameter]
-    public List<ScheduledRequest>? ScheduledRequests { get; set; }
+    public List<RequestDefinitions>? ScheduledRequests { get; set; }
 
     [Parameter]
     public EventCallback OnAddRequest { get; set; }

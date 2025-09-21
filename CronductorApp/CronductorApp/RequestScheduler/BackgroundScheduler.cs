@@ -45,29 +45,37 @@ public class BackgroundScheduler : BackgroundService
     private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
         var nowUtc = _timeProvider.GetUtcNow().UtcDateTime;
-        
+
         try
         {
-            while (_scheduleService.PeekNextSchedule(out var executionTime) && executionTime <= nowUtc)
+            while (_scheduleService.TryPeekNextOccurrence(out var executionTime) && executionTime <= nowUtc)
             {
-                var nextScheduledRequest = _scheduleService.DequeueNextSchedule();
-                _logger.LogDebug("Processing scheduled request {RequestName} at {ExecutionTime}",
-                    nextScheduledRequest.Name, executionTime);
+                var occurrence = _scheduleService.DequeueNextOccurrence();
+                if (!_scheduleService.TryGetDefinition(occurrence.RequestId, out var definition))
+                {
+                    continue;
+                }
 
-                // Re-add so that schedules with close executions are not blocked by current execution(s)
-                // We're taking this execution, then when re-added, the scheduler will evaluate and queue the next one
-                _scheduleService.AddSchedule(nextScheduledRequest);
+                _logger.LogDebug("Processing scheduled request {RequestName} at {ExecutionTime}",
+                    definition.Name, executionTime);
+
+                _scheduleService.RequeueAfterExecution(definition);
 
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await _requestProcessor.ProcessRequest(nextScheduledRequest);
+                        if (definition.Version != occurrence.Version || !definition.IsActive)
+                        {
+                            return;
+                        }
+
+                        await _requestProcessor.ProcessRequest(definition);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error processing request {RequestName}, will retry on next schedule",
-                            nextScheduledRequest.Name);
+                        _logger.LogError(ex, "Error processing request {Name}, will retry on next schedule",
+                            definition.Name);
                     }
                 }, cancellationToken);
             }

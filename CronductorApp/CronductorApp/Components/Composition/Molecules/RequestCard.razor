@@ -5,13 +5,13 @@
 <!-- Request Card Molecule -->
 <div class="box request-item p-4">
     <div class="mb-3">
-        <h4 class="title is-6 mb-1">@Request.Name</h4>
-        <p class="subtitle is-7 has-text-grey-light mb-0">@Request.Url</p>
+        <h4 class="title is-6 mb-1">@RequestDefinitions.Name</h4>
+        <p class="subtitle is-7 has-text-grey-light mb-0">@RequestDefinitions.Url</p>
     </div>
     <div class="columns is-vcentered is-mobile">
         <div class="column">
             <div class="tags">
-                <StatusTag Text="@Request.CronSchedule" Status="info" />
+                <StatusTag Text="@RequestDefinitions.CronSchedule" Status="info" />
                 <StatusTag Text="@GetStatusText()" Status="@GetStatusClass()" />
             </div>
         </div>
@@ -19,14 +19,14 @@
             <div class="buttons mr-2">
                 <IconButton IconClass="@GetToggleIcon()" ButtonClass="neutral-button" OnClick="ToggleActive" />
             </div>
-            <EditDeleteButtons ItemId="@Request.Id" OnEdit="@OnEdit" OnDelete="@OnDelete" />
+            <EditDeleteButtons ItemId="@RequestDefinitions.Id" OnEdit="@OnEdit" OnDelete="@OnDelete" />
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public ScheduledRequest Request { get; set; } = new();
+    public RequestDefinitions RequestDefinitions { get; set; } = new();
 
     [Parameter]
     public EventCallback<string> OnEdit { get; set; }
@@ -36,17 +36,17 @@
 
     private async Task ToggleActive()
     {
-        if (Request.IsActive)
+        if (RequestDefinitions.IsActive)
         {
-            await ScheduleService.PauseDefinitionAsync(Request.Id);
+            await ScheduleService.PauseDefinitionAsync(RequestDefinitions.Id);
         }
         else
         {
-            await ScheduleService.ResumeDefinitionAsync(Request.Id);
+            await ScheduleService.ResumeDefinitionAsync(RequestDefinitions.Id);
         }
     }
 
-    private string GetStatusText() => Request.IsActive ? "Running" : "Paused";
-    private string GetStatusClass() => Request.IsActive ? "active" : "inactive";
-    private string GetToggleIcon() => Request.IsActive ? "fas fa-pause" : "fas fa-play";
+    private string GetStatusText() => RequestDefinitions.IsActive ? "Running" : "Paused";
+    private string GetStatusClass() => RequestDefinitions.IsActive ? "active" : "inactive";
+    private string GetToggleIcon() => RequestDefinitions.IsActive ? "fas fa-pause" : "fas fa-play";
 }
