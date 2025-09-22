@@ -5,43 +5,43 @@ namespace CronductorApp.RequestScheduler.Data;
 // todo - persist to a sqlite db or json file
 public class RequestDefinitionRepository(ILogger<RequestDefinitionRepository> logger)
 {
-    private readonly List<RequestDefinitions> _scheduledRequests = [];
+    private readonly List<RequestDefinition> _scheduledRequests = [];
 
-    public async Task<RequestDefinitions?> GetByIdAsync(string requestId)
+    public async Task<RequestDefinition?> GetByIdAsync(string requestId)
     {
         var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestId);
         return await Task.FromResult(existingRequest);
     }
 
-    public async Task<IList<RequestDefinitions>> GetScheduledRequests()
+    public async Task<IList<RequestDefinition>> GetScheduledRequests()
     {
         return await Task.FromResult(_scheduledRequests);
     }
 
-    public async Task AddOrUpdateDefinitionAsync(RequestDefinitions requestDefinitions)
+    public async Task AddOrUpdateDefinitionAsync(RequestDefinition requestDefinition)
     {
-        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestDefinitions.Id);
+        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestDefinition.Id);
         if (existingRequest != null)
         {
             _scheduledRequests.Remove(existingRequest);
         }
         
-        _scheduledRequests.Add(requestDefinitions);
+        _scheduledRequests.Add(requestDefinition);
         await Task.CompletedTask;
     }
 
     [Obsolete(message: "Use AddOrUpdateDefinitionAsync instead")]
-    public async Task UpdateScheduledRequest(RequestDefinitions requestDefinitions)
+    public async Task UpdateScheduledRequest(RequestDefinition requestDefinition)
     {
-        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestDefinitions.Id);
+        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestDefinition.Id);
         if (existingRequest != null)
         {
             _scheduledRequests.Remove(existingRequest);
-            _scheduledRequests.Add(requestDefinitions);
+            _scheduledRequests.Add(requestDefinition);
         }
         else
         {
-            logger.LogWarning("Scheduled request with Id {RequestId} not found for update", requestDefinitions.Id);
+            logger.LogWarning("Scheduled request with Id {RequestId} not found for update", requestDefinition.Id);
         }
 
         await Task.CompletedTask;

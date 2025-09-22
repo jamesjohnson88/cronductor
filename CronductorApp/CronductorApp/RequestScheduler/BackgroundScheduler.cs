@@ -45,7 +45,7 @@ public class BackgroundScheduler : BackgroundService
     private void TryProcessNextScheduledRequestAsync(CancellationToken cancellationToken)
     {
         var nowUtc = _timeProvider.GetUtcNow().UtcDateTime;
-
+        
         try
         {
             while (_scheduleService.TryPeekNextOccurrence(out var executionTime) && executionTime <= nowUtc)

@@ -4,26 +4,27 @@ using Cronos;
 
 namespace CronductorApp.RequestScheduler;
 
-public readonly record struct ScheduledOccurrence(string RequestId, int Version, DateTime ExecuteAtUtc);
+public readonly record struct ScheduledOccurrence(string RequestId, int Version);
 
 public class ScheduleService(
     ILogger<ScheduleService> logger,
     RequestDefinitionRepository repository)
 {
-    public List<RequestDefinitions> RequestDefinitions => 
+    public List<RequestDefinition> RequestDefinitions => 
         _definitions.Select(kvp => kvp.Value)
             .OrderBy(r => r.Name)
             .ToList();
     
-    private readonly PriorityQueue<ScheduledOccurrence, DateTime> _scheduleQueue = new();
     private readonly object _queueLock = new();
-    private readonly Dictionary<string, RequestDefinitions> _definitions = new();
+    private readonly PriorityQueue<ScheduledOccurrence, DateTime> _scheduleQueue = new();
+    private readonly Dictionary<string, RequestDefinition> _definitions = new();
 
-    public async Task AddOrUpdateDefinitionAsync(RequestDefinitions definition)
+    public async Task AddOrUpdateDefinitionAsync(RequestDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         try
         {
+            // todo - check this is actually adding the definition as expected
             var addedNew = _definitions.TryAdd(definition.Name, definition);
             if (!addedNew)
             {
@@ -69,7 +70,7 @@ public class ScheduleService(
         
         definition.IsActive = false;
         await repository.AddOrUpdateDefinitionAsync(definition);
-        // todo - remove any queued occurrences for this definition
+        _definitions[requestId] = definition;
     }
 
     public async Task ResumeDefinitionAsync(string requestId)
@@ -81,6 +82,7 @@ public class ScheduleService(
         
         definition.IsActive = true;
         await repository.AddOrUpdateDefinitionAsync(definition);
+        _definitions[requestId] = definition;
         EnqueueNextOccurrence(definition);
     }
 
@@ -97,6 +99,8 @@ public class ScheduleService(
                 }
                 // drop stale occurrence
                 _scheduleQueue.Dequeue();
+                logger.LogDebug("TryPeek() Dropped stale occurrence for request {RequestId} version {Version}",
+                    occurrence.RequestId, occurrence.Version);
             }
         }
 
@@ -114,30 +118,33 @@ public class ScheduleService(
                 {
                     return occurrence;
                 }
+                
+                logger.LogDebug("Dequeue() Dropped stale occurrence for request {RequestId} version {Version}",
+                    occurrence.RequestId, occurrence.Version);
             }
         }
 
         throw new InvalidOperationException("No scheduled occurrences are available.");
     }
 
-    public bool TryGetDefinition(string requestId, out RequestDefinitions definition)
+    public bool TryGetDefinition(string requestId, out RequestDefinition definition)
     {
         return _definitions.TryGetValue(requestId, out definition!);
     }
 
-    public void RequeueAfterExecution(RequestDefinitions definition)
+    public void RequeueAfterExecution(RequestDefinition definition)
     {
         if (!definition.IsActive) return;
         EnqueueNextOccurrence(definition);
     }
 
-    private void EnqueueNextOccurrence(RequestDefinitions definition)
+    private void EnqueueNextOccurrence(RequestDefinition definition)
     {
         var next = EvaluateNextOccurrence(definition);
         if (!next.HasValue) return;
         lock (_queueLock)
         {
-            _scheduleQueue.Enqueue(new ScheduledOccurrence(definition.Id, definition.Version, next.Value), next.Value);
+            _scheduleQueue.Enqueue(new ScheduledOccurrence(definition.Id, definition.Version), next.Value);
             logger.LogInformation("Queued next occurrence for {RequestName} at {ExecuteAt}", definition.Name, next.Value);
         }
     }
@@ -146,27 +153,32 @@ public class ScheduleService(
     {
         if (!_definitions.TryGetValue(occurrence.RequestId, out var def))
         {
+            logger.LogWarning("No definition found for request {RequestName}", occurrence.RequestId);
             return false;
         }
 
         if (!def.IsActive)
         {
+            logger.LogInformation("Definition for {RequestId} is inactive, skipping occurrence", occurrence.RequestId);
             return false;
         }
+        
+        logger.LogInformation("Occurrence for {RequestId} is at version {OccurrenceVersion}, current definition version is {DefinitionVersion}",
+            occurrence.RequestId, occurrence.Version, def.Version);
         
         return def.Version == occurrence.Version;
     }
 
-    private DateTime? EvaluateNextOccurrence(RequestDefinitions requestDefinitions)
+    private DateTime? EvaluateNextOccurrence(RequestDefinition requestDefinition)
     {
         try
         {
-            var cron = CronExpression.Parse(requestDefinitions.CronSchedule, CronFormat.IncludeSeconds);
+            var cron = CronExpression.Parse(requestDefinition.CronSchedule, CronFormat.IncludeSeconds);
             var nextOccurrence = cron.GetNextOccurrence(DateTime.UtcNow);
             if (nextOccurrence.HasValue)
             {
                 logger.LogDebug("Next occurrence for {RequestName} with cron '{CronSchedule}': {NextOccurrence}",
-                    requestDefinitions.Name, requestDefinitions.CronSchedule, nextOccurrence.Value);
+                    requestDefinition.Name, requestDefinition.CronSchedule, nextOccurrence.Value);
             }
 
             return nextOccurrence;
@@ -174,7 +186,7 @@ public class ScheduleService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error parsing cron expression '{CronSchedule}' for request {RequestName}: {Message}",
-                requestDefinitions.CronSchedule, requestDefinitions.Name, ex.Message);
+                requestDefinition.CronSchedule, requestDefinition.Name, ex.Message);
             return null;
         }
     }

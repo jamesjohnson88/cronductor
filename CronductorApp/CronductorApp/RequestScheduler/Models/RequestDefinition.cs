@@ -3,7 +3,7 @@ using CronductorApp.Components.Composition.Models;
 
 namespace CronductorApp.RequestScheduler.Models;
 
-public class RequestDefinitions
+public class RequestDefinition
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     

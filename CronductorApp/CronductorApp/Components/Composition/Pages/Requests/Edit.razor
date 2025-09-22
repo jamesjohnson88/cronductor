@@ -27,7 +27,7 @@
     [Parameter]
     public string? RequestId { get; set; }
 
-    private RequestDefinitions Model { get; set; } = new();
+    private RequestDefinition Model { get; set; } = new();
     private bool IsEdit => !string.IsNullOrWhiteSpace(RequestId);
     private bool ShowValidation { get; set; }
 
@@ -39,7 +39,7 @@
             var existing = Repository.GetByIdAsync(RequestId).Result; // todo - can this be improved within the init?
             if (existing != null)
             {
-                Model = new RequestDefinitions()
+                Model = new RequestDefinition()
                 {
                     Id = existing.Id,
                     Name = existing.Name,
@@ -62,7 +62,7 @@
         }
         else
         {
-            Model = new RequestDefinitions();
+            Model = new RequestDefinition();
         }
     }
 

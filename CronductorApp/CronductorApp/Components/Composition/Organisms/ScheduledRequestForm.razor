@@ -34,7 +34,7 @@
     @if (AllowsBody(Model.Method))
     {
         <div class="column is-12">
-            <JsonBodyEditor Label="Body (JSON)" Value="@Model.Body.ToString()" ValueChanged="@(v => Model.Body = v)"
+            <JsonBodyEditor Label="Body (JSON)" Value="@Model.Body?.ToString()" ValueChanged="@(v => Model.Body = v)"
                 Rows="8" />
         </div>
     }
@@ -54,7 +54,7 @@
 
 @code {
     [Parameter]
-    public RequestDefinitions Model { get; set; } = new();
+    public RequestDefinition Model { get; set; } = new();
 
     [Parameter]
     public bool ShowValidation { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using CronductorApp.RequestScheduler.Models;
 
 namespace CronductorApp.RequestScheduler;
 
@@ -13,7 +14,7 @@ public class RequestProcessor
         _logger = logger;
     }
 
-    public async Task ProcessRequest(Models.RequestDefinitions requestDefinitions)
+    public async Task ProcessRequest(RequestDefinition requestDefinitions)
     {
         try
         {
@@ -45,7 +46,7 @@ public class RequestProcessor
         }
     }
 
-    private static HttpRequestMessage CreateHttpRequestMessage(Models.RequestDefinitions requestDefinitions)
+    private static HttpRequestMessage CreateHttpRequestMessage(RequestDefinition requestDefinitions)
     {
         var rq = new HttpRequestMessage(HttpMethod.Parse(requestDefinitions.Method), requestDefinitions.Url)
         {
