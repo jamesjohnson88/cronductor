@@ -24,12 +24,11 @@ public class ScheduleService(
         ArgumentNullException.ThrowIfNull(definition);
         try
         {
-            // todo - check this is actually adding the definition as expected
-            var addedNew = _definitions.TryAdd(definition.Name, definition);
+            var addedNew = _definitions.TryAdd(definition.Id, definition);
             if (!addedNew)
             {
                 definition.Version++;
-                _definitions[definition.Name] = definition;
+                _definitions[definition.Id] = definition;
             }
             
             await repository.AddOrUpdateDefinitionAsync(definition);
@@ -97,6 +96,7 @@ public class ScheduleService(
                     nextOccurrenceUtc = executeAtUtc;
                     return true;
                 }
+                
                 // drop stale occurrence
                 _scheduleQueue.Dequeue();
                 logger.LogDebug("TryPeek() Dropped stale occurrence for request {RequestId} version {Version}",
@@ -119,6 +119,7 @@ public class ScheduleService(
                     return occurrence;
                 }
                 
+                // drop stale occurrence
                 logger.LogDebug("Dequeue() Dropped stale occurrence for request {RequestId} version {Version}",
                     occurrence.RequestId, occurrence.Version);
             }
@@ -151,6 +152,7 @@ public class ScheduleService(
 
     private bool IsOccurrenceValid(ScheduledOccurrence occurrence)
     {
+        logger.LogInformation("All requests: {Requests}", string.Join(", ", _definitions.Keys));
         if (!_definitions.TryGetValue(occurrence.RequestId, out var def))
         {
             logger.LogWarning("No definition found for request {RequestName}", occurrence.RequestId);
@@ -159,11 +161,11 @@ public class ScheduleService(
 
         if (!def.IsActive)
         {
-            logger.LogInformation("Definition for {RequestId} is inactive, skipping occurrence", occurrence.RequestId);
+            logger.LogDebug("Definition for {RequestId} is inactive, skipping occurrence", occurrence.RequestId);
             return false;
         }
         
-        logger.LogInformation("Occurrence for {RequestId} is at version {OccurrenceVersion}, current definition version is {DefinitionVersion}",
+        logger.LogDebug("Occurrence for {RequestId} is at version {OccurrenceVersion}, current definition version is {DefinitionVersion}",
             occurrence.RequestId, occurrence.Version, def.Version);
         
         return def.Version == occurrence.Version;
