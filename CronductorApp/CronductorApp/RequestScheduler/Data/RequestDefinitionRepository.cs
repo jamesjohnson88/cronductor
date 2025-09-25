@@ -30,23 +30,6 @@ public class RequestDefinitionRepository(ILogger<RequestDefinitionRepository> lo
         await Task.CompletedTask;
     }
 
-    [Obsolete(message: "Use AddOrUpdateDefinitionAsync instead")]
-    public async Task UpdateScheduledRequest(RequestDefinition requestDefinition)
-    {
-        var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestDefinition.Id);
-        if (existingRequest != null)
-        {
-            _scheduledRequests.Remove(existingRequest);
-            _scheduledRequests.Add(requestDefinition);
-        }
-        else
-        {
-            logger.LogWarning("Scheduled request with Id {RequestId} not found for update", requestDefinition.Id);
-        }
-
-        await Task.CompletedTask;
-    }
-
     public async Task DeleteScheduledRequest(string requestId)
     {
         var existingRequest = _scheduledRequests.SingleOrDefault(r => r.Id == requestId);
