@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronductorApp", "CronductorApp\CronductorApp.csproj", "{F1428CD0-7516-4320-9C6A-D2D4DC2E1E78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronductorApp.Data", "CronductorApp.Data\CronductorApp.Data.csproj", "{BFAE4EC3-4037-43F9-8740-12113F0AC6AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{F1428CD0-7516-4320-9C6A-D2D4DC2E1E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1428CD0-7516-4320-9C6A-D2D4DC2E1E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1428CD0-7516-4320-9C6A-D2D4DC2E1E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFAE4EC3-4037-43F9-8740-12113F0AC6AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFAE4EC3-4037-43F9-8740-12113F0AC6AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFAE4EC3-4037-43F9-8740-12113F0AC6AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFAE4EC3-4037-43F9-8740-12113F0AC6AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

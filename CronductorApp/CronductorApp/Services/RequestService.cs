@@ -2,13 +2,12 @@ using CronductorApp.Components.Composition.Models;
 
 namespace CronductorApp.Services;
 
+[Obsolete(message:"Use ScheduleService instead", error: false)]
 public class RequestService
 {
     public List<RequestModel> ScheduledRequests { get; set; } = new();
     public List<HistoryModel> RequestHistory { get; set; } = new();
     public List<LiveLogModel> LiveLogs { get; set; } = new();
-
-    public event Action? OnScheduledRequestsChanged;
 
     public void InitializeSampleData()
     {
@@ -98,31 +97,5 @@ public class RequestService
                 Timestamp = DateTime.Now.AddSeconds(-20)
             }
         };
-    }
-
-    public async Task AddRequest(RequestModel request)
-    {
-        ScheduledRequests.Add(request);
-        OnScheduledRequestsChanged?.Invoke();
-        await Task.CompletedTask;
-    }
-
-    public async Task EditRequest(string requestId, RequestModel updatedRequest)
-    {
-        var existingRequest = ScheduledRequests.FirstOrDefault(r => r.Id == requestId);
-        if (existingRequest != null)
-        {
-            var index = ScheduledRequests.IndexOf(existingRequest);
-            ScheduledRequests[index] = updatedRequest;
-            OnScheduledRequestsChanged?.Invoke();
-        }
-        await Task.CompletedTask;
-    }
-
-    public async Task DeleteRequest(string requestId)
-    {
-        ScheduledRequests.RemoveAll(r => r.Id == requestId);
-        OnScheduledRequestsChanged?.Invoke();
-        await Task.CompletedTask;
     }
 }

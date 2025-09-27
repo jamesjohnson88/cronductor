@@ -1,4 +1,5 @@
 using CronductorApp.Components;
+using CronductorApp.Data;
 using CronductorApp.RequestScheduler;
 using CronductorApp.RequestScheduler.Data;
 using CronductorApp.Services;
@@ -6,6 +7,8 @@ using Polly;
 using Polly.Extensions.Http;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSqliteWithMigrations("Data Source=cronductor.db");
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -26,7 +29,7 @@ builder.Services.AddHttpClient<RequestProcessor>(client =>
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<RequestDefinitionRepository>();
 builder.Services.AddSingleton<ScheduleService>();
-builder.Services.AddSingleton<RequestService>(); // temp - remove
+builder.Services.AddSingleton<RequestService>();
 
 builder.Services.AddHostedService<BackgroundScheduler>();
 
@@ -45,6 +48,8 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.ApplyMigrations();
 
 app.Run();
 return;

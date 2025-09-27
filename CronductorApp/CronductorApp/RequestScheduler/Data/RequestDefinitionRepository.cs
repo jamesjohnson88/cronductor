@@ -1,10 +1,14 @@
-﻿using CronductorApp.RequestScheduler.Models;
+﻿using System.Data;
+using CronductorApp.RequestScheduler.Models;
+using Dapper;
 
 namespace CronductorApp.RequestScheduler.Data;
 
-// todo - persist to a sqlite db or json file
-public class RequestDefinitionRepository(ILogger<RequestDefinitionRepository> logger)
+public class RequestDefinitionRepository(
+    ILogger<RequestDefinitionRepository> logger,
+    IDbConnection dbConnection)
 {
+    [Obsolete(message:"Replace with Sqlite/Dapper implementation")]
     private readonly List<RequestDefinition> _scheduledRequests = [];
 
     public async Task<RequestDefinition?> GetByIdAsync(string requestId)
