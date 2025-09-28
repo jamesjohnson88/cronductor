@@ -6,9 +6,7 @@ namespace CronductorApp.RequestScheduler;
 
 public readonly record struct ScheduledOccurrence(string RequestId, int Version);
 
-public class ScheduleService(
-    ILogger<ScheduleService> logger,
-    RequestDefinitionRepository repository)
+public class ScheduleService
 {
     public List<RequestDefinition> RequestDefinitions => 
         _definitions.Select(kvp => kvp.Value)
@@ -18,6 +16,18 @@ public class ScheduleService(
     private readonly object _queueLock = new();
     private readonly PriorityQueue<ScheduledOccurrence, DateTime> _scheduleQueue = new();
     private readonly Dictionary<string, RequestDefinition> _definitions = new();
+    private readonly ILogger<ScheduleService> _logger;
+    private readonly RequestDefinitionRepository _repository;
+
+    public ScheduleService(ILogger<ScheduleService> logger,
+        RequestDefinitionRepository repository)
+    {
+        _logger = logger;
+        _repository = repository;
+        
+        var allDefinitions = repository.GetScheduledRequests().GetAwaiter().GetResult();
+        _definitions = allDefinitions.ToDictionary(definition => definition.Id, definition => definition);
+    }
 
     public async Task AddOrUpdateDefinitionAsync(RequestDefinition definition)
     {
@@ -31,7 +41,7 @@ public class ScheduleService(
                 _definitions[definition.Id] = definition;
             }
             
-            await repository.AddOrUpdateDefinitionAsync(definition);
+            await _repository.AddOrUpdateDefinitionAsync(definition);
 
             if (definition.IsActive)
             {
@@ -40,7 +50,7 @@ public class ScheduleService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to add/update definition {RequestName}: {Message}", definition.Name, ex.Message);
+            _logger.LogError(ex, "Failed to add/update definition {RequestName}: {Message}", definition.Name, ex.Message);
             throw;
         }
     }
@@ -51,11 +61,11 @@ public class ScheduleService(
         try
         {
             _definitions.Remove(requestId);
-            await repository.DeleteScheduledRequest(requestId);
+            await _repository.DeleteScheduledRequest(requestId);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to delete definition {RequestId}: {Message}", requestId, ex.Message);
+            _logger.LogError(ex, "Failed to delete definition {RequestId}: {Message}", requestId, ex.Message);
             throw;
         }
     }
@@ -68,7 +78,7 @@ public class ScheduleService(
         }
         
         definition.IsActive = false;
-        await repository.AddOrUpdateDefinitionAsync(definition);
+        await _repository.AddOrUpdateDefinitionAsync(definition);
         _definitions[requestId] = definition;
     }
 
@@ -80,7 +90,7 @@ public class ScheduleService(
         }
         
         definition.IsActive = true;
-        await repository.AddOrUpdateDefinitionAsync(definition);
+        await _repository.AddOrUpdateDefinitionAsync(definition);
         _definitions[requestId] = definition;
         EnqueueNextOccurrence(definition);
     }
@@ -99,7 +109,7 @@ public class ScheduleService(
                 
                 // drop stale occurrence
                 _scheduleQueue.Dequeue();
-                logger.LogDebug("TryPeek() Dropped stale occurrence for request {RequestId} version {Version}",
+                _logger.LogDebug("TryPeek() Dropped stale occurrence for request {RequestId} version {Version}",
                     occurrence.RequestId, occurrence.Version);
             }
         }
@@ -120,7 +130,7 @@ public class ScheduleService(
                 }
                 
                 // drop stale occurrence
-                logger.LogDebug("Dequeue() Dropped stale occurrence for request {RequestId} version {Version}",
+                _logger.LogDebug("Dequeue() Dropped stale occurrence for request {RequestId} version {Version}",
                     occurrence.RequestId, occurrence.Version);
             }
         }
@@ -146,26 +156,25 @@ public class ScheduleService(
         lock (_queueLock)
         {
             _scheduleQueue.Enqueue(new ScheduledOccurrence(definition.Id, definition.Version), next.Value);
-            logger.LogInformation("Queued next occurrence for {RequestName} at {ExecuteAt}", definition.Name, next.Value);
+            _logger.LogInformation("Queued next occurrence for {RequestName} at {ExecuteAt}", definition.Name, next.Value);
         }
     }
 
     private bool IsOccurrenceValid(ScheduledOccurrence occurrence)
     {
-        logger.LogInformation("All requests: {Requests}", string.Join(", ", _definitions.Keys));
         if (!_definitions.TryGetValue(occurrence.RequestId, out var def))
         {
-            logger.LogWarning("No definition found for request {RequestName}", occurrence.RequestId);
+            _logger.LogWarning("No definition found for request {RequestName}", occurrence.RequestId);
             return false;
         }
 
         if (!def.IsActive)
         {
-            logger.LogDebug("Definition for {RequestId} is inactive, skipping occurrence", occurrence.RequestId);
+            _logger.LogDebug("Definition for {RequestId} is inactive, skipping occurrence", occurrence.RequestId);
             return false;
         }
         
-        logger.LogDebug("Occurrence for {RequestId} is at version {OccurrenceVersion}, current definition version is {DefinitionVersion}",
+        _logger.LogDebug("Occurrence for {RequestId} is at version {OccurrenceVersion}, current definition version is {DefinitionVersion}",
             occurrence.RequestId, occurrence.Version, def.Version);
         
         return def.Version == occurrence.Version;
@@ -179,7 +188,7 @@ public class ScheduleService(
             var nextOccurrence = cron.GetNextOccurrence(DateTime.UtcNow);
             if (nextOccurrence.HasValue)
             {
-                logger.LogDebug("Next occurrence for {RequestName} with cron '{CronSchedule}': {NextOccurrence}",
+                _logger.LogDebug("Next occurrence for {RequestName} with cron '{CronSchedule}': {NextOccurrence}",
                     requestDefinition.Name, requestDefinition.CronSchedule, nextOccurrence.Value);
             }
 
@@ -187,7 +196,7 @@ public class ScheduleService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error parsing cron expression '{CronSchedule}' for request {RequestName}: {Message}",
+            _logger.LogError(ex, "Error parsing cron expression '{CronSchedule}' for request {RequestName}: {Message}",
                 requestDefinition.CronSchedule, requestDefinition.Name, ex.Message);
             return null;
         }

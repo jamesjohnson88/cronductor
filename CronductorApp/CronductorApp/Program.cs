@@ -3,6 +3,7 @@ using CronductorApp.Data;
 using CronductorApp.RequestScheduler;
 using CronductorApp.RequestScheduler.Data;
 using CronductorApp.Services;
+using CronductorApp.Startup;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -49,6 +50,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+DapperConfig.RegisterTypeHandlers();
 app.ApplyMigrations();
 
 app.Run();
